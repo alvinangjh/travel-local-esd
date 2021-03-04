@@ -1,0 +1,133 @@
+$font-color: white;
+$theme-color: white;
+$alpha: 0.7;
+$theme-color-alpha: rgba($theme-color, $alpha);
+
+html {
+	background-color: #fffafa;
+}
+
+.like_img{
+    max-width: 15px;
+    max-height: 15px;
+    margin-top: -5px;
+}
+
+.card {
+	display: flex;
+	height: 70%;
+	max-height: 100%;
+	text-align: center;
+	color: $font-color;
+	font-size: 2rem;
+	overflow: hidden;
+
+	.blockquote-footer {
+		font-size: 12px;
+		color: $font-color;
+	}
+
+	.card-footer {
+		color: $font-color;
+		vertical-align: text-top;
+		font-size: 0.5rem;
+	}
+}
+
+a {
+	color: $font-color;
+}
+
+.link_overlay :hover {
+	background-color: rgba($color: #000000, $alpha: 0.5);
+	transform: scale(1.15);
+	overflow: hidden;
+}
+
+.card-img-overlay {
+	color: $font-color;
+	background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+}
+
+.card-img-overlay :hover {
+	background-color: rgba($color: #000000, $alpha: 0);
+	transform: scale(1);
+}
+.card-img-top {
+	max-height: 250px;
+}
+
+.hero-image {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://images7.alphacoders.com/456/thumb-1920-456555.jpg");
+	display: block;
+	min-height: 520px;
+	max-height: 520px;
+	height: 40%; //50%
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: relative;
+	margin-bottom: 50px;
+
+	.hero-content {
+		text-align: center;
+		// line-height: 250px;
+		color: white;
+		font-size: 3rem;
+	}
+
+	#itinCreationForm {
+		color: $font-color;
+	}
+
+	#btm_cont {
+		margin-top: 7%;
+		// position: absolute;
+		right: 0;
+		width: 100%;
+		// background-color: red;
+	}
+}
+
+.p-5 {
+	color: $font-color;
+	text-align: center;
+	background-color: $theme-color-alpha;
+}
+
+.container-fluid {
+	min-height: 100%;
+}
+
+.h2 {
+	margin-bottom: 2rem;
+	// text-decoration: underline;
+}
+
+#left_words {
+	color: $font-color;
+	text-decoration: none;
+}
+
+.to_delete {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: rgba($color: #000000, $alpha: 0);
+}
+
+.fa-trash {
+	color: white;
+}
+
+.h1 {
+	font-size: 2rem;
+}
+
+#signOutDiv {
+	display: none;
+}
+
+// .fa{
+//     color: white;
+// }

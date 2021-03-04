@@ -1,0 +1,30 @@
+.dayLink {
+  color: #d91a72;
+  font-weight: bold;
+}
+
+.dayLink:hover {
+  color: pink;
+  text-decoration: none;
+}
+
+.utility {
+  color: #d91a72;
+  font-weight: bold;
+}
+
+.utility:hover {
+  color: pink;
+  text-decoration: none;
+}
+
+#successLink {
+  display: none;
+}
+
+.btn:focus,
+.btn:active {
+  outline: none !important;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}

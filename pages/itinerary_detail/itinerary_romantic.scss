@@ -1,0 +1,63 @@
+$main-color: #e83e8c;
+$secondary-color: #d91a72;
+$bg-color: #fffafa;
+$theme-name: "romantic";
+
+body {
+	background-color: bg-color;
+}
+
+.dayLink {
+	color: $secondary-color;
+	font-weight: bold;
+}
+
+.dayLink:hover {
+	color: $main-color;
+	text-decoration: none;
+}
+
+.utility {
+	background-color: $secondary-color;
+	font-weight: bold;
+	color: white;
+}
+
+// .utility:hover {
+// 	color: $main-color;
+// 	text-decoration: none;
+// }
+
+#headerDiv {
+	background: url("images/" + $theme-name + ".png") no-repeat center;
+	background-size: cover;
+	border-left: 12px solid $secondary-color;
+	border-right: 12px solid $secondary-color;
+}
+
+#leftDiv {
+	// float: left;
+	position: fixed;
+	width: 28%;
+	overflow: hidden;
+	z-index: 99;
+}
+
+.icon {
+	color: $secondary-color;
+}
+
+#entrySectionDiv {
+	// float: right;
+	width: 67%;
+}
+
+.dailyDiv {
+	background-color: $main-color;
+	border-bottom: 9px solid $secondary-color;
+	color: black;
+}
+
+.transport {
+	border: 3px solid $secondary-color;
+}

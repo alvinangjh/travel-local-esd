@@ -1,0 +1,52 @@
+body {
+  background-color: bg-color;
+}
+
+.dayLink {
+  color: #d91a72;
+  font-weight: bold;
+}
+
+.dayLink:hover {
+  color: #e83e8c;
+  text-decoration: none;
+}
+
+.utility {
+  background-color: #d91a72;
+  font-weight: bold;
+  color: white;
+}
+
+#headerDiv {
+  background: url("images/romantic.png") no-repeat center;
+  background-size: cover;
+  border-left: 12px solid #d91a72;
+  border-right: 12px solid #d91a72;
+}
+
+#leftDiv {
+  position: fixed;
+  width: 28%;
+  overflow: hidden;
+  z-index: 99;
+}
+
+.icon {
+  color: #d91a72;
+}
+
+#entrySectionDiv {
+  width: 67%;
+}
+
+.dailyDiv {
+  background-color: #e83e8c;
+  border-bottom: 9px solid #d91a72;
+  color: black;
+}
+
+.transport {
+  border: 3px solid #d91a72;
+}
+/*# sourceMappingURL=itinerary_romantic.css.map */

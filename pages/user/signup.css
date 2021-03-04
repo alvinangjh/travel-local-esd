@@ -1,0 +1,27 @@
+body,
+html {
+  background: url("images/login_bg2.jpg") no-repeat center center fixed;
+  background-size: cover !important;
+  overflow: hidden;
+}
+
+.cover-container {
+  height: 100vh;
+}
+
+#register {
+  padding-top: 3.5%;
+  padding-bottom: 3.5%;
+  width: 70%;
+}
+
+#error_msg {
+  display: none;
+  text-align: center;
+}
+
+a:hover {
+  color: #3395ff;
+  text-decoration: none;
+}
+/*# sourceMappingURL=signup.css.map */

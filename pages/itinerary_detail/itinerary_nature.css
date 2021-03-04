@@ -1,0 +1,51 @@
+body {
+  background-color: #fffafa;
+}
+
+.dayLink {
+  color: #1db954;
+  font-weight: bold;
+}
+
+.dayLink:hover {
+  color: #2bde6a;
+  text-decoration: none;
+}
+
+.utility {
+  background-color: #1db954;
+  color: white;
+}
+
+#headerDiv {
+  background: url("images/nature.png") no-repeat center;
+  background-size: cover;
+  border-left: 12px solid #1db954;
+  border-right: 12px solid #1db954;
+}
+
+#leftDiv {
+  position: fixed;
+  width: 28%;
+  overflow: hidden;
+  z-index: 99;
+}
+
+.icon {
+  color: #1db954;
+}
+
+#entrySectionDiv {
+  width: 67%;
+}
+
+.dailyDiv {
+  background-color: #1db954;
+  border-bottom: 9px solid #2bde6a;
+  color: white;
+}
+
+.transport {
+  border: 3px solid #1db954;
+}
+/*# sourceMappingURL=itinerary_nature.css.map */

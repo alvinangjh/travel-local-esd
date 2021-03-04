@@ -1,0 +1,51 @@
+body {
+  background-color: #fffafa;
+}
+
+.dayLink {
+  color: #c49c67;
+  font-weight: bold;
+}
+
+.dayLink:hover {
+  color: #d2b48c;
+  text-decoration: none;
+}
+
+.utility {
+  background-color: #c49c67;
+  color: white;
+}
+
+#headerDiv {
+  background: url("images/casual.png") no-repeat center;
+  background-size: cover;
+  border-left: 12px solid #c49c67;
+  border-right: 12px solid #c49c67;
+}
+
+#leftDiv {
+  position: fixed;
+  width: 28%;
+  overflow: hidden;
+  z-index: 99;
+}
+
+.icon {
+  color: #c49c67;
+}
+
+#entrySectionDiv {
+  width: 67%;
+}
+
+.dailyDiv {
+  background-color: #c49c67;
+  border-bottom: 9px solid #d2b48c;
+  color: white;
+}
+
+.transport {
+  border: 3px solid #c49c67;
+}
+/*# sourceMappingURL=itinerary_casual.css.map */

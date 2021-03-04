@@ -1,0 +1,61 @@
+$main-color: #00aaff;
+$secondary-color: #0088cc;
+$bg-color: #fffafa;
+$theme-name: "family";
+
+body {
+	background-color: $bg-color;
+}
+
+.dayLink {
+	color: $secondary-color;
+	font-weight: bold;
+}
+.dayLink:hover {
+	color: $main-color;
+	text-decoration: none;
+}
+
+.utility {
+	background-color: $secondary-color;
+	color: white;
+}
+
+// .utility:hover {
+// 	color: $main-color;
+// 	text-decoration: none;
+// }
+
+#headerDiv {
+	background: url("images/" + $theme-name + ".png") no-repeat center;
+	background-size: cover;
+	border-left: 12px solid $secondary-color;
+	border-right: 12px solid $secondary-color;
+}
+
+#leftDiv {
+	// float: left;
+	position: fixed;
+	width: 28%;
+	overflow: hidden;
+	z-index: 99;
+}
+
+.icon {
+	color: $secondary-color;
+}
+
+#entrySectionDiv {
+	// float: right;
+	width: 67%;
+}
+
+.dailyDiv {
+	background-color: $secondary-color;
+	border-bottom: 9px solid $main-color;
+	color: white;
+}
+
+.transport {
+	border: 3px solid $secondary-color;
+}
