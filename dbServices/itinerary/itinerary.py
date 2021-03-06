@@ -109,7 +109,7 @@ def update_itinerary(itineraryID):
         {
             "code": 404,
             "data": {
-                "itineraryID": itinerary
+                "itineraryID": itineraryID
             },
             "message": "Itinerary not found."
         }
