@@ -4,7 +4,7 @@ from flask_cors import CORS
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local' #RMB TO UPDATE THIS
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local_hiddengem' #RMB TO UPDATE THIS
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -77,8 +77,25 @@ def create_hg():
         }
     ), 201
 
+@app.route("/hiddengem/all/<string:keyword>")
+def get_all_hg(keyword):
+    hgList = HG.query.filter(HG.name.like("%{}%".format(keyword))).all()
 
-@app.route("/hiddengem/<int:poiUUID>")
+    if len(hgList):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [hg.json() for hg in hgList]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No hidden gems found."
+        }
+    ), 404
+
+@app.route("/hiddengem/one/<int:poiUUID>")
 def get_specific_hg(poiUUID):
     hg = HG.query.filter_by(poiUUID=poiUUID).first()
     if hg:
