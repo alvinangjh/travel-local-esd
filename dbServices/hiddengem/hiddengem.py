@@ -113,4 +113,4 @@ def get_specific_hg(poiUUID):
     ), 404
 
 if __name__ == '__main__':
-    app.run(port=5002, debug=True) #rmb to update this
+    app.run(port=5001, debug=True) #rmb to update this
