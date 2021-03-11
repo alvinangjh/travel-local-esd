@@ -4,7 +4,7 @@ from flask_cors import CORS
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local' #RMB TO UPDATE THIS
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local_itinerary' #RMB TO UPDATE THIS
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -33,6 +33,32 @@ class Itinerary(db.Model): #1 class refer to 1 row
 
     def json(self):
         return {"itineraryID": self.itineraryID, "name": self.name, "startDate": self.startDate, "endDate": self.endDate, "theme": self.theme, "userID": self.userID, "shared": self.shared}
+
+
+class Event(db.Model): #1 class refer to 1 row
+    __tablename__ = 'event'
+
+    eventID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    poiUUID = db.Column(db.String(256), nullable=False)
+    startTime = db.Column(db.Time, nullable=False, default = datetime.utcnow)
+    endTime = db.Column(db.Time, nullable=False, default = datetime.utcnow)
+    eventDate = db.Column(db.DateTime, nullable=False, default = datetime.utcnow)
+    locType = db.Column (db.String(256), nullable=False)
+    locCategory = db.Column(db.String(256), nullable=False)
+    itineraryID = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, poiUUID, startTime, endTime, eventDate, locType, locCategory, itineraryID):
+        #note for auto-increment dunnid put in init
+        self.poiUUID = poiUUID
+        self.startTime = startTime
+        self.endTime = endTime
+        self.eventDate = eventDate
+        self.locType = locType
+        self.locCategory = locCategory
+        self.itineraryID = itineraryID
+
+    def json(self):
+        return {"itineraryID": self.itineraryID, "poiUUID": self.poiUUID, "startTime": str(self.startTime), "endTime": str(self.endTime), "eventDate": self.eventDate, "locType": self.locType, "locCategory": self.locCategory, "eventID": self.eventID}
 
 
 @app.route("/itinerary", methods=['POST'])
@@ -139,6 +165,111 @@ def delete_book(itineraryID):
             "message": "Itinerary not found."
         }
     ), 404
+
+@app.route("/event", methods=['POST'])
+def addEvent():
+    data = request.get_json()
+
+    eventToAdd = Event(**data)
+
+    try:
+        db.session.add(eventToAdd)
+        db.session.commit()
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred adding the Event."
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "data": eventToAdd.json()
+        }
+    ), 201
+
+
+@app.route("/event/<int:itineraryID>")
+def get_all_events(itineraryID):
+    eventList = Event.query.filter_by(itineraryID=itineraryID).all()
+    if len(eventList):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [event.json() for event in eventList]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Events not found."
+        }
+    ), 404
+
+@app.route("/event/update/<int:eventID>", methods=['PUT'])
+def update_activity(eventID):
+    event = Event.query.filter_by(activityID=eventID).first()
+    if event:
+        data = request.get_json()
+        try:
+            event.startTime = data['startTime']
+        except:
+            pass
+        try:
+            event.endTime = data['endTime']
+        except:
+            pass
+        try:
+            event.eventDate = data['eventDate'] 
+        except:
+            pass
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": event.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "eventID": eventID
+            },
+            "message": "Event not found."
+        }
+    ), 404
+
+@app.route("/activity/delete/<int:eventID>", methods=['DELETE'])
+def delete_activity(eventID):
+    event = Event.query.filter_by(activityID=eventID).first()
+    if event:
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "eventID": eventID
+                },
+                "message": "Event deleted."
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "eventID": eventID
+            },
+            "message": "Activity not found."
+        }
+    ), 404
+
+
+
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True) #rmb to update this
