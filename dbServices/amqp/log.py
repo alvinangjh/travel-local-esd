@@ -35,7 +35,7 @@ class Log(db.Model): #1 class refer to 1 row
         self.status = status
 
     def json(self):
-        return {"actionID":self.actionID, "timeStamp": str(self.timeStamp), "userID": self.userID, "action": self.action, "logDetails": self.logDetails, "status": self.status}
+        return {"logID":self.logID, "timeStamp": str(self.timeStamp), "userID": self.userID, "action": self.action, "logDetails": self.logDetails, "status": self.status}
 
 
 monitorBindingKey = '*.*.log' #e.g. addEvent.error.log refers to error log of an add event action, addEvent.success.log refers to success log of an add event action 
@@ -56,11 +56,11 @@ def callback(channel, method, properties, body):
     print(results[0].get_json())
 
 
-def processActionLog(action, status):
+def processActionLog(properties, status):
 
     with app.app_context():
-        logToAdd = Log(**action, status=status)
-
+        logToAdd = Log(**properties, status=status)
+        
         try:
             db.session.add(logToAdd)
             db.session.commit()

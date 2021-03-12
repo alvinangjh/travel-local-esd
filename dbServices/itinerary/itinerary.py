@@ -210,7 +210,7 @@ def get_all_events(itineraryID):
 
 @app.route("/event/update/<int:eventID>", methods=['PUT'])
 def update_activity(eventID):
-    event = Event.query.filter_by(activityID=eventID).first()
+    event = Event.query.filter_by(eventID=eventID).first()
     if event:
         data = request.get_json()
         try:
@@ -242,9 +242,9 @@ def update_activity(eventID):
         }
     ), 404
 
-@app.route("/activity/delete/<int:eventID>", methods=['DELETE'])
+@app.route("/event/delete/<int:eventID>", methods=['DELETE'])
 def delete_activity(eventID):
-    event = Event.query.filter_by(activityID=eventID).first()
+    event = Event.query.filter_by(eventID=eventID).first()
     if event:
         db.session.delete(event)
         db.session.commit()
