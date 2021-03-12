@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS `hiddengem` (
   `theme` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `businessContact` int(11) NOT NULL,
   `businessEmail` varchar(256) NOT NULL,
-  `startTime` varchar(256) NOT NULL,
-  `endTime` varchar(256) NOT NULL,
+  `startTime` time NOT NULL,
+  `endTime` time NOT NULL,
   `businessWeb` varchar(256) NOT NULL,
   PRIMARY KEY (`poiUUID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
