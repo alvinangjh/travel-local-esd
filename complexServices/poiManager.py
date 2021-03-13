@@ -175,6 +175,10 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
             else:
                 result["businessContact"] = data["contact"]["primaryContactNo"]
             
+            result = jsonify({
+                "code": code,
+                "data": result
+            })
         else:
             #if error
             try:
@@ -182,7 +186,7 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
             except:
                 result = jsonify({
                     "code": "500",
-                    "message": event_result["message"]
+                    "data": event_result["message"]
                 })
     elif locType == "HG":
         #call Hidden Gem Service
@@ -198,6 +202,32 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
         code = 404
 
     return result, code
+
+@app.route("/search/itinerary/<int:itineraryID>")
+def getAllEventsInItinerary(itineraryID):
+    final_itinerary_URL = itinerary_URL +"event/" + str(itineraryID)
+
+    event_results = invoke_http(final_itinerary_URL)
+    code = event_results["code"]
+
+    if code in range(200,300):
+        dataList = event_results["data"]
+        result = []
+        for data in dataList:
+            temp = data
+            event_details, event_code = searchSpecificEvent(data["locType"], data["poiUUID"], data["locCategory"])
+            print(event_details.json["data"])
+            temp["POIDetails"] = event_details.json['data']
+            
+            result.append(temp)
+        
+        return jsonify({
+            "code": 200,
+            "data": result
+        })
+    else:
+        return event_results
+
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
