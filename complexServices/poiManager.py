@@ -5,6 +5,7 @@ import os, sys
 
 import requests
 from invokes import invoke_http
+from datetime import datetime
 
 # import amqp_setup
 import pika
@@ -17,8 +18,7 @@ itinerary_URL = "http://localhost:5000/"
 hg_URL = "http://localhost:5001/hiddengem/"
 STB_API_key = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx"
 DATASET = "accommodation,attractions,event,food_beverages,shops,venue,walking_trail"
-stb_base_URL = "https://tih-api.stb.gov.sg/content/v1/search/all?dataset="+DATASET+"&apikey="+STB_API_key
-
+stb_base_URL = "https://tih-api.stb.gov.sg/content/v1/"
 CATEGORY = {
     "Attractions": "attractions",
     "Malls & Shops": "shops",
@@ -53,7 +53,7 @@ def searchEventsByKeyword(keyword):
 
 def get_STB_by_keyword(keyword):
 
-    url = stb_base_URL+"&keyword="+keyword
+    url = stb_base_URL+"/search/all?dataset="+DATASET+"&apikey="+STB_API_key+"&keyword="+keyword
 
     event_result = invoke_http(url)
     code = event_result["status"]["code"]
@@ -69,7 +69,6 @@ def get_STB_by_keyword(keyword):
                 unique.append(data["name"])
 
                 #temp dict to store only relevant data
-
                 temp = {
                     "name": data["name"],
                     "imageUrl": data["images"][0]["uuid"],
@@ -113,103 +112,121 @@ def get_HG_by_keyword(keyword):
         #handle error here
         return False, event_result["message"]
 
+@app.route("/search/<string:locType>/<string:poiUUID>/")
+@app.route("/search/<string:locType>/<string:poiUUID>/<string:locCategory>")
+def searchSpecificEvent(locType, poiUUID, locCategory = None):
+    if locType == "TA":
+        #call STB API for data
+        url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
+        event_result = invoke_http(url)
+        try:
+            code = event_result['status']['code']
+        except:
+            code = event_result["code"]
 
-def processPlaceOrder(order):
-    # 2. Send the order info {cart items}
-    # Invoke the order microservice
-    print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL, method='POST', json=order)
-    print('order_result:', order_result)
-  
+        if code in range(200,300):
+            #data clean up and return only useful info
+            data = event_result["data"][0]
+            
+            result = {
+                "name": data["name"],
+                "poiUUID": poiUUID,
+                "description": data["body"],
+                "reviews": data["reviews"],
+                "rating": data["rating"],
+                "latitude": data["location"]["latitude"],
+                "longitude": data["location"]["longitude"],
+                "postalCode": data["address"]["postalCode"],
+                "locCategory": data["type"]
+            }
 
-    # Check the order result; if a failure, send it to the error microservice.
-    code = order_result["code"]
-    message = json.dumps(order_result)
+            if(len(data["images"]) != 0 or data["images"][0]["uuid"] != ""):
+                result["imageUrl"] = data["images"][0]["uuid"]
+            else:
+                result["imageUrl"] = ""
 
-    if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as order fails-----')
-        print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
+            try: 
+                if len(data['businessHour']) != 0:
+                    startTime = datetime.strptime(data["businessHour"][0]["openTime"], "%H:%M").strftime("%I:%M %p")
 
-        # invoke_http(error_URL, method="POST", json=order_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-        # make message persistent within the matching queues until it is received by some receiver 
-        # (the matching queues have to exist and be durable and bound to the exchange)
+                    endTime = datetime.strptime(data["businessHour"][0]["closeTime"], "%H:%M").strftime("%I:%M %p")
 
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails        
-        print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
-            code), order_result)
+                    result["startTime"] = startTime
+                    result["endTime"] = endTime
+                else:
+                    result["startTime"] = "??"
+                    result["endTime"] = "??"
+            except:
+                result["startTime"] = "??"
+                result["endTime"] = "??"
+            
+            if data["officialEmail"] == "":
+                result["businessEmail"] = "-"
+            else:
+                result["businessEmail"] = data["officialEmail"]
 
-        # 7. Return error
-        return {
-            "code": 500,
-            "data": {"order_result": order_result},
-            "message": "Order creation failure sent for error handling."
-        }
-
-    # Notice that we are publishing to "Activity Log" only when there is no error in order creation.
-    # In http version, we first invoked "Activity Log" and then checked for error.
-    # Since the "Activity Log" binds to the queue using '#' => any routing_key would be matched 
-    # and a message sent to “Error” queue can be received by “Activity Log” too.
-
+            if data["officialWebsite"] == "":
+                result["businessWeb"] = "-"
+            else:
+                result["businessWeb"] = data["officialWebsite"]
+            
+            if data["contact"]["primaryContactNo"] == "":
+                result['businessContact'] = "-"
+            else:
+                result["businessContact"] = data["contact"]["primaryContactNo"]
+            
+            result = jsonify({
+                "code": code,
+                "data": result
+            })
+        else:
+            #if error
+            try:
+                result = event_result["status"]
+            except:
+                result = jsonify({
+                    "code": "500",
+                    "data": event_result["message"]
+                })
+    elif locType == "HG":
+        #call Hidden Gem Service
+        url = hg_URL + "one/"+poiUUID
+        result = invoke_http(url)
+        code = result["code"]
     else:
-        # 4. Record new order
-        # record the activity log anyway
-        #print('\n\n-----Invoking activity_log microservice-----')
-        print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')        
+        result = jsonify({
+            "code": 404,
+            "locType": locType,
+            "data": "Undefined locType."
+        })
+        code = 404
 
-        # invoke_http(activity_log_URL, method="POST", json=order_result)            
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
-            body=message)
-    
-    print("\nOrder published to RabbitMQ Exchange.\n")
-    # - reply from the invocation is not used;
-    # continue even if this invocation fails
-    
-    # 5. Send new order to shipping
-    # Invoke the shipping record microservice
-    print('\n\n-----Invoking shipping_record microservice-----')    
-    
-    shipping_result = invoke_http(
-        shipping_record_URL, method="POST", json=order_result['data'])
-    print("shipping_result:", shipping_result, '\n')
+    return result, code
 
-    # Check the shipping result;
-    # if a failure, send it to the error microservice.
-    code = shipping_result["code"]
-    if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as shipping fails-----')
-        print('\n\n-----Publishing the (shipping error) message with routing_key=shipping.error-----')
+@app.route("/search/itinerary/<int:itineraryID>")
+def getAllEventsInItinerary(itineraryID):
+    final_itinerary_URL = itinerary_URL +"event/" + str(itineraryID)
 
-        # invoke_http(error_URL, method="POST", json=shipping_result)
-        message = json.dumps(shipping_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="shipping.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+    event_results = invoke_http(final_itinerary_URL)
+    code = event_results["code"]
 
-        print("\nShipping status ({:d}) published to the RabbitMQ Exchange:".format(
-            code), shipping_result)
-
-        # 7. Return error
-        return {
-            "code": 400,
-            "data": {
-                "order_result": order_result,
-                "shipping_result": shipping_result
-            },
-            "message": "Simulated shipping record error sent for error handling."
-        }
-
-    # 7. Return created order, shipping record
-    return {
-        "code": 201,
-        "data": {
-            "order_result": order_result,
-            "shipping_result": shipping_result
-        }
-    }
+    if code in range(200,300):
+        dataList = event_results["data"]
+        result = []
+        for data in dataList:
+            temp = data
+            event_details, event_code = searchSpecificEvent(data["locType"], data["poiUUID"], data["locCategory"])
+            print(event_details.json["data"])
+            temp["POIDetails"] = event_details.json['data']
+            
+            result.append(temp)
+        
+        return jsonify({
+            "code": 200,
+            "data": result
+        })
+    else:
+        return event_results
 
 
 # Execute this program if it is run as a main script (not by 'import')

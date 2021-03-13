@@ -27,11 +27,11 @@ class HG(db.Model): #1 class refer to 1 row
     theme = db.Column(db.String(256), nullable = False)
     businessContact = db.Column(db.Integer, nullable=True)
     businessEmail = db.Column(db.String(256), nullable=True)
-    startTime = db.Column(db.Time, nullable = False, default = datetime.utcnow)
-    endTime = db.Column(db.Time, nullable= False, default = datetime.utcnow)
+    openTime = db.Column(db.Time, nullable = False, default = datetime.utcnow)
+    closeTime = db.Column(db.Time, nullable= False, default = datetime.utcnow)
     businessWeb = db.Column(db.String(256), nullable=True)
 
-    def __init__(self, name, address, postalCode, description, locCategory, rating, imageUrl, latitude, longitude, theme, businessContact, businessEmail, startTime, endTime, businessWeb):
+    def __init__(self, name, address, postalCode, description, locCategory, rating, imageUrl, latitude, longitude, theme, businessContact, businessEmail, openTime, closeTime, businessWeb):
         #note for auto-increment dunnid put in init
         self.name = name
         self.address = address
@@ -45,12 +45,12 @@ class HG(db.Model): #1 class refer to 1 row
         self.theme = theme
         self.businessContact = businessContact
         self.businessEmail = businessEmail
-        self.startTime = startTime
-        self.endTime = endTime
+        self.openTime = openTime
+        self.closeTime = closeTime
         self.businessWeb = businessWeb
 
     def json(self):
-        return {"poiUUID": self.poiUUID, "name": self.name, "address":self.address, "postalCode":self.postalCode, "description": self.description, "locCategory": self.locCategory, "rating": self.rating, "imageUrl": self.imageUrl, "latitude": self.latitude, "longitude":self.longitude, "theme": self.theme, "businessContact":self.businessContact, "businessEmail":self.businessEmail, "startTime": str(self.startTime), "endTime": str(self.endTime), "businessWeb":self.businessWeb}
+        return {"poiUUID": self.poiUUID, "name": self.name, "address":self.address, "postalCode":self.postalCode, "description": self.description, "locCategory": self.locCategory, "rating": self.rating, "imageUrl": self.imageUrl, "latitude": self.latitude, "longitude":self.longitude, "theme": self.theme, "businessContact":self.businessContact, "businessEmail":self.businessEmail, "openTime": str(self.openTime), "closeTime": str(self.closeTime), "businessWeb":self.businessWeb}
 
 
 @app.route("/hiddengem", methods=['POST'])
