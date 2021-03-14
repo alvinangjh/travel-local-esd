@@ -69,7 +69,7 @@ def get_specific_theme(theme):
     return jsonify(
         {
             "code": 404,
-            "message": "Recommendations not found."
+            "data": "Recommendations not found."
         }
     ), 404
 

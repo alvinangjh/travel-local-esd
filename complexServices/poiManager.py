@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 itinerary_URL = "http://localhost:5000/"
-hg_URL = "http://localhost:5001/hiddengem/"
+hg_URL = "http://localhost:5001/hiddengem"
 STB_API_key = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx"
 DATASET = "accommodation,attractions,event,food_beverages,shops,venue,walking_trail"
 stb_base_URL = "https://tih-api.stb.gov.sg/content/v1/"
@@ -88,7 +88,7 @@ def get_STB_by_keyword(keyword):
         return False, event_result["status"]
 
 def get_HG_by_keyword(keyword):
-    url = hg_URL + "all/"+keyword
+    url = hg_URL + "/all/"+keyword
 
     event_result = invoke_http(url)
     code = event_result["code"]
@@ -190,7 +190,7 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
                 })
     elif locType == "HG":
         #call Hidden Gem Service
-        url = hg_URL + "one/"+poiUUID
+        url = hg_URL + "/one/"+poiUUID
         result = invoke_http(url)
         code = result["code"]
     else:
@@ -203,30 +203,23 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
 
     return result, code
 
-@app.route("/search/itinerary/<int:itineraryID>")
-def getAllEventsInItinerary(itineraryID):
-    final_itinerary_URL = itinerary_URL +"event/" + str(itineraryID)
+@app.route("/poi/create", methods= ["POST"])
+def create_hidden_gem():
+    if request.is_json:
+        try:
+            hidden_gem = request.get_json()
+            # print("\nReceived an hidden_gem in JSON:", hidden_gem)
+            creation_result = invoke_http(hg_URL,method='POST', json = hidden_gem)
+            # print('creation_result:', creation_result)
+            return jsonify(creation_result), creation_result["code"]
+        except Exception as e:
+            pass  # do nothing.
 
-    event_results = invoke_http(final_itinerary_URL)
-    code = event_results["code"]
-
-    if code in range(200,300):
-        dataList = event_results["data"]
-        result = []
-        for data in dataList:
-            temp = data
-            event_details, event_code = searchSpecificEvent(data["locType"], data["poiUUID"], data["locCategory"])
-            print(event_details.json["data"])
-            temp["POIDetails"] = event_details.json['data']
-            
-            result.append(temp)
-        
-        return jsonify({
-            "code": 200,
-            "data": result
-        })
-    else:
-        return event_results
+    # if reached here, not a JSON request.
+    return jsonify({
+        "code": 400,
+        "message": "Invalid JSON input: " + str(request.get_data())
+    }), 400
 
 
 # Execute this program if it is run as a main script (not by 'import')
