@@ -85,6 +85,19 @@ def createItinerary():
         }
     ), 201
 
+@app.route("/itinerary/all/<int:userID>")
+def get_all_itinerary(userID):
+    itineraryList = Itinerary.query.filter_by(userID=userID).all()
+    if len(itineraryList):
+        return jsonify({
+            "code": 200,
+            "data": [itinerary.json() for itinerary in itineraryList]
+        })
+    else:
+        return jsonify({
+            "code": 404,
+            "data": "No itinerary found."
+        }), 404
 
 @app.route("/itinerary/<int:itineraryID>")
 def get_specific_itinerary(itineraryID):
@@ -189,7 +202,6 @@ def addEvent():
             "data": eventToAdd.json()
         }
     ), 201
-
 
 @app.route("/event/<int:itineraryID>")
 def get_all_events(itineraryID):
