@@ -88,7 +88,7 @@ def add_event():
     }), 400
 
 
-@app.route("/itr/all/<int:itineraryID>")
+@app.route("/itr/allEvents/<int:itineraryID>")
 def getAllEventsInItinerary(itineraryID):
     final_itinerary_URL = itinerary_URL +"event/" + str(itineraryID)
 
@@ -112,6 +112,13 @@ def getAllEventsInItinerary(itineraryID):
         })
     else:
         return jsonify(event_results), code
+
+@app.route("/itr/allITR/<int:userID>")
+def getAllItinerary(userID):
+    itr_url = itinerary_URL + "itinerary/all/"+str(userID)
+    itinerary_result = invoke_http(itr_url)
+    return jsonify(itinerary_result), itinerary_result["code"]
+
 
 
 # Execute this program if it is run as a main script (not by 'import')
