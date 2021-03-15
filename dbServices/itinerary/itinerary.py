@@ -60,7 +60,7 @@ class Event(db.Model): #1 class refer to 1 row
     def json(self):
         return {"itineraryID": self.itineraryID, "poiUUID": self.poiUUID, "startTime": str(self.startTime), "endTime": str(self.endTime), "eventDate": self.eventDate, "locType": self.locType, "locCategory": self.locCategory, "eventID": self.eventID}
 
-
+#Create a single itinerary
 @app.route("/itinerary", methods=['POST'])
 def createItinerary():
     data = request.get_json()
@@ -85,6 +85,7 @@ def createItinerary():
         }
     ), 201
 
+#Retrieve all itineraries by userID
 @app.route("/itinerary/all/<int:userID>")
 def get_all_itinerary(userID):
     itineraryList = Itinerary.query.filter_by(userID=userID).all()
@@ -99,6 +100,7 @@ def get_all_itinerary(userID):
             "data": "No itinerary found."
         }), 404
 
+#Retrieve all itineraries by itienraryID
 @app.route("/itinerary/<int:itineraryID>")
 def get_specific_itinerary(itineraryID):
     itinerary = Itinerary.query.filter_by(itineraryID=itineraryID).first()
@@ -116,6 +118,7 @@ def get_specific_itinerary(itineraryID):
         }
     ), 404
 
+#Update itinerary details by itineraryID
 @app.route("/itinerary/update/<int:itineraryID>", methods=['PUT'])
 def update_itinerary(itineraryID):
     itinerary = Itinerary.query.filter_by(itineraryID=itineraryID).first()
@@ -154,6 +157,7 @@ def update_itinerary(itineraryID):
         }
     ), 404
 
+#Delete itinerary by itineraryID
 @app.route("/itinerary/delete/<int:itineraryID>", methods=['DELETE'])
 def delete_book(itineraryID):
     itinerary = Itinerary.query.filter_by(itineraryID=itineraryID).first()
@@ -179,6 +183,7 @@ def delete_book(itineraryID):
         }
     ), 404
 
+#Add new event
 @app.route("/event", methods=['POST'])
 def addEvent():
     data = request.get_json()
@@ -203,6 +208,7 @@ def addEvent():
         }
     ), 201
 
+#Get event by itineraryID
 @app.route("/event/<int:itineraryID>")
 def get_all_events(itineraryID):
     eventList = Event.query.filter_by(itineraryID=itineraryID).all()
@@ -220,6 +226,7 @@ def get_all_events(itineraryID):
         }
     ), 404
 
+#Update event details by eventID
 @app.route("/event/update/<int:eventID>", methods=['PUT'])
 def update_activity(eventID):
     event = Event.query.filter_by(eventID=eventID).first()
@@ -254,6 +261,7 @@ def update_activity(eventID):
         }
     ), 404
 
+#Delete event by eventID
 @app.route("/event/delete/<int:eventID>", methods=['DELETE'])
 def delete_activity(eventID):
     event = Event.query.filter_by(eventID=eventID).first()
@@ -278,10 +286,6 @@ def delete_activity(eventID):
             "message": "Activity not found."
         }
     ), 404
-
-
-
-
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True) #rmb to update this
