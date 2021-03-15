@@ -4,7 +4,7 @@ class Database {
 
     // specify your own database credentials
     private $host = "localhost";
-    private $db_name = "travel_local";
+    private $db_name = "travel_local_user";
     private $username = "root";
     private $password = ""; // MAMP "root", WAMP empty string
     private $port = 3306;   // Check in PHPMyAdmin for port number
