@@ -69,8 +69,9 @@ function retrieveActivity() {
 	checkUser();
 
 	var itineraryID = new URL(window.location.href).searchParams.get("id");
-	var ownParam = new URL(window.location.href).searchParams.get("own");
-	var baseUrl = "../../php/objects/itineraryCopy.php";
+	// var ownParam = new URL(window.location.href).searchParams.get("own");
+	var ownParam = "yes";
+	// var baseUrl = "../../php/objects/itineraryCopy.php";
 
 	/* If the itinerary does not belong to the user, allow only specific buttons */
 	if (ownParam.toLowerCase() != "yes") {
@@ -84,15 +85,15 @@ function retrieveActivity() {
 	}
 
 	var activities = [];
-	var baseUrl = "../../php/objects/activityRetrieve.php";
+	// var baseUrl = "../../php/objects/activityRetrieve.php";
+	var baseUrl = "http://localhost:5000/event/" + itineraryID;
 
 	$.ajax({
 		url: baseUrl,
-		type: "POST",
+		type: "GET",
 		dataType: "json",
-		data: { itinerary_id: itineraryID },
 	}).done(function (responseText) {
-		var data = responseText;
+		var data = responseText["data"];
 
 		/* Sort activities based on start time (earliest first) */
 		var sorted = data.sort((a, b) => {
@@ -101,13 +102,13 @@ function retrieveActivity() {
 
 		for (item of sorted) {
 			var activity = {
-				activityID: item.activityID,
+				activityID: item.eventID,
 				poiUUID: item.poiUUID,
 				startTime: item.startTime,
 				endTime: item.endTime,
-				activityDate: item.activityDate,
+				activityDate: item.eventDate,
 				locType: item.locType,
-				locDataset: item.locDataset,
+				locDataset: item.locCategory,
 			};
 
 			activities.push(activity);
@@ -119,29 +120,30 @@ function retrieveActivity() {
 
 /* Generate the skeleton for all the days of the itinerary */
 function generateDay(itineraryID, activities) {
-	var itineraryID = itineraryID;
-	var baseUrl = "../../php/objects/itineraryRetrieve.php";
-	var ownParam = new URL(window.location.href).searchParams.get("own");
+	// var itineraryID = itineraryID;
+	// var baseUrl = "../../php/objects/itineraryRetrieve.php";
+	var baseUrl = "http://localhost:5000/itinerary/" + itineraryID;
+	var ownParam = "yes"
+	// var ownParam = new URL(window.location.href).searchParams.get("own");
 
 	$.ajax({
 		url: baseUrl,
-		type: "POST",
+		type: "GET",
 		dataType: "json",
-		data: { itinerary_id: itineraryID },
 	}).done(function (responseText) {
-		var result = responseText;
+		var result = responseText["data"];
 
-		document.getElementById("rdBtn" + result[0].itineraryType.charAt(0).toUpperCase() + result[0].itineraryType.slice(1)).checked = true;
+		document.getElementById("rdBtn" + result.theme.charAt(0).toUpperCase() + result.theme.slice(1)).checked = true;
 
-		document.getElementById("siteHeader").innerText = result[0].name;
-		document.getElementById("itineraryTheme").href = "itinerary_" + result[0].itineraryType.toLowerCase() + ".css";
+		document.getElementById("siteHeader").innerText = result.name;
+		document.getElementById("itineraryTheme").href = "itinerary_" + result.theme.toLowerCase() + ".css";
 		document.getElementById(
 			"itinerary_name"
-		).innerHTML = `${result[0].name} <button id="btnEditTitle" class="btn btn-lg p-0" data-toggle="modal" data-target="#editItineraryModal"><i class="icon fas fa-edit pb-2" style="height: 100%"></i></button>`;
-		$("#tbItineraryTitle").val(result[0].name);
-		document.getElementById("itinerary_date").innerText = result[0].startDate + " - " + result[0].endDate;
+		).innerHTML = `${result.name} <button id="btnEditTitle" class="btn btn-lg p-0" data-toggle="modal" data-target="#editItineraryModal"><i class="icon fas fa-edit pb-2" style="height: 100%"></i></button>`;
+		$("#tbItineraryTitle").val(result.name);
+		document.getElementById("itinerary_date").innerText = moment(result.startDate).format("ddd, DD MMM YYYY") + " - " + moment(result.endDate).format("ddd, DD MMM YYYY");
 
-		var dateArray = getDates(new Date(result[0].startDate), new Date(result[0].endDate));
+		var dateArray = getDates(new Date(result.startDate), new Date(result.endDate));
 
 		/* Assign correct icons according to the itinerary type/theme */
 		for (var i = 0; i < dateArray.length; i++) {
@@ -153,16 +155,16 @@ function generateDay(itineraryID, activities) {
 			//nature: leaf
 			//casual: footstep
 
-			if (result[0].itineraryType.toLowerCase() == "romantic") {
+			if (result.theme.toLowerCase() == "romantic") {
 				itineraryDays.innerHTML += `<h5 class="text-center"><a class="dayLink" href="#${formattedDate}"><i class="icon navigationIcon fas fa-heart"></i> 
 			Day ${i + 1}</a></h5>`;
-			} else if (result[0].itineraryType.toLowerCase() == "family") {
+			} else if (result.theme.toLowerCase() == "family") {
 				itineraryDays.innerHTML += `<h5 class="text-center"><a class="dayLink" href="#${formattedDate}"><i class="icon navigationIcon fas fa-home"></i> 
 			Day ${i + 1}</a></h5>`;
-			} else if (result[0].itineraryType.toLowerCase() == "nature") {
+			} else if (result.theme.toLowerCase() == "nature") {
 				itineraryDays.innerHTML += `<h5 class="text-center"><a class="dayLink" href="#${formattedDate}"><i class="icon navigationIcon fas fa-leaf"></i> 
 			Day ${i + 1}</a></h5>`;
-			} else if (result[0].itineraryType.toLowerCase() == "casual") {
+			} else if (result.theme.toLowerCase() == "casual") {
 				itineraryDays.innerHTML += `<h5 class="text-center"><a class="dayLink" href="#${formattedDate}"><i class="icon navigationIcon fas fa-shoe-prints"></i> 
 			Day ${i + 1}</a></h5>`;
 			}
@@ -174,7 +176,7 @@ function generateDay(itineraryID, activities) {
 			$("#btnEditTitle").attr("style", "display:''");
 		}
 
-		populateItinerary(activities, result[0].startDate, result[0].endDate);
+		populateItinerary(activities, result.startDate, result.endDate);
 	});
 }
 
@@ -630,7 +632,8 @@ function callImage(imageUUID, callback) {
 
 /* Allow the user to edit activity based on time and date */
 function editActivity(clicked_id) {
-	var baseUrl = "../../php/objects/activityUpdate.php";
+	// var baseUrl = "../../php/objects/activityUpdate.php";
+	var baseUrl = "http://localhost:5000/event/update/" + clicked_id;
 	var ddlDate = document.getElementById("ddlDate" + clicked_id);
 	var startTime = document.getElementById("tbStartTime" + clicked_id).value;
 	var endTime = document.getElementById("tbEndTime" + clicked_id).value;
@@ -643,16 +646,15 @@ function editActivity(clicked_id) {
 
 		$.ajax({
 			url: baseUrl,
-			type: "POST",
-			dataType: "json",
-			data: {
-				activityID: clicked_id,
-				activityDate: ddlDate.options[ddlDate.selectedIndex].value,
-				startTime: moment(startTime, "hh:mm A").format("HH:mm"),
-				endTime: moment(endTime, "hh:mm A").format("HH:mm"),
-			},
+			type: "PUT",
+			contentType: 'application/json',
+			data: JSON.stringify({ 
+				"eventDate": ddlDate.options[ddlDate.selectedIndex].value,
+				"startTime": moment(startTime, "hh:mm A").format("HH:mm"),
+				"endTime": moment(endTime, "hh:mm A").format("HH:mm"),
+			}),
 		}).done(function (responseText) {
-			if (responseText == 1) {
+			if (responseText["code"] == 200) {
 				window.location.reload();
 			}
 		});
@@ -663,14 +665,14 @@ function editActivity(clicked_id) {
 
 /* delete activity */
 function deleteActivity(clicked_id) {
-	var baseUrl = "../../php/objects/activityDelete.php";
+	// var baseUrl = "../../php/objects/activityDelete.php";
+	var baseUrl = "http://localhost:5000/event/delete/" + clicked_id
 
 	$.ajax({
 		url: baseUrl,
-		type: "POST",
-		data: { activity_id: clicked_id },
+		method: "DELETE",
 	}).done(function (responseText) {
-		if (responseText == 1) {
+		if (responseText["code"] == 200) {
 			window.location.reload();
 		}
 	});
@@ -727,15 +729,17 @@ function redirectCopied(id) {
 
 /* Edit itinerary title */
 function editItinerary() {
-	var idParam = new URL(window.location.href).searchParams.get("id");
-	var baseUrl = "../../php/objects/itineraryUpdateName.php";
+	var itineraryID = new URL(window.location.href).searchParams.get("id");
+	var baseUrl = "http://localhost:5000/itinerary/update/" + itineraryID;
 
 	$.ajax({
 		url: baseUrl,
-		type: "POST",
-		data: { itinerary_id: idParam, name: $("#tbItineraryTitle").val() },
+		type: "PUT",
+		contentType: 'application/json',
+		data: JSON.stringify({ "name": $("#tbItineraryTitle").val() }),
 	}).done(function (responseText) {
-		if (responseText == 1) {
+		console.log(responseText)
+		if (responseText["code"] == 200) {
 			window.location.reload();
 		}
 	});
