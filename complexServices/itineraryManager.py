@@ -31,6 +31,8 @@ CATEGORY = {
     "Events": "event"
 }
 
+#Handle itinerary endpoints
+#create new itinerary
 @app.route("/itr/createITR", methods= ["POST"])
 def create_itinerary():
     if request.is_json:
@@ -66,7 +68,38 @@ def create_itinerary():
         "message": "Invalid JSON input: " + str(request.get_data())
     }), 400
 
+#get all user itinerary
+@app.route("/itr/allITR/<int:userID>")
+def getAllItinerary(userID):
+    itr_url = itinerary_URL + "itinerary/all/"+str(userID)
+    itinerary_result = invoke_http(itr_url)
+    return jsonify(itinerary_result), itinerary_result["code"]
 
+#get specific itinerary by itineraryID
+@app.route("/itr/getSpecificITR/<int:itineraryID>")
+def getSpecificItinerary(itineraryID):
+    itr_url = itinerary_URL + "itinerary/"+str(itineraryID)
+    itinerary_result = invoke_http(itr_url)
+    return jsonify(itinerary_result), itinerary_result["code"]
+
+#update specific itinerary
+@app.route("/itr/updateITR/<int:itineraryID>", methods=['PUT'])
+def update_itinerary(itineraryID):
+
+    data = request.get_json()
+
+    itr_url = itinerary_URL + "itinerary/update/"+str(itineraryID)
+    itinerary_result = invoke_http(itr_url, method='PUT', json = data)
+    return jsonify(itinerary_result), itinerary_result["code"]
+
+#delete specific itinerary
+@app.route("/itr/deleteITR/<int:itineraryID>", methods = ['DELETE'])
+def delete_itinerary(itineraryID):
+    itr_url = itinerary_URL + "itinerary/delete/"+str(itineraryID)
+    itinerary_result = invoke_http(itr_url, method='DELETE')
+    return jsonify(itinerary_result), itinerary_result["code"]
+
+#add new event to itinerary
 @app.route("/itr/addEvent", methods=['POST'])
 def add_event():
     if request.is_json:
@@ -87,7 +120,7 @@ def add_event():
         "message": "Invalid JSON input: " + str(request.get_data())
     }), 400
 
-
+#get all events in itinerary + required info for display
 @app.route("/itr/allEvents/<int:itineraryID>")
 def getAllEventsInItinerary(itineraryID):
     final_itinerary_URL = itinerary_URL +"event/" + str(itineraryID)
@@ -113,12 +146,22 @@ def getAllEventsInItinerary(itineraryID):
     else:
         return jsonify(event_results), code
 
-@app.route("/itr/allITR/<int:userID>")
-def getAllItinerary(userID):
-    itr_url = itinerary_URL + "itinerary/all/"+str(userID)
-    itinerary_result = invoke_http(itr_url)
+
+#update event
+@app.route("/itr/updateEvent/<int:eventID>", methods =["PUT"])
+def updateEvent(eventID):
+    data = request.get_json()
+
+    itr_url = itinerary_URL + "event/update/"+str(eventID)
+    itinerary_result = invoke_http(itr_url, method='PUT', json = data)
     return jsonify(itinerary_result), itinerary_result["code"]
 
+#delete event
+@app.route("/itr/deleteEvent/<int:eventID>", methods=["DELETE"])
+def deleteEvent(eventID):
+    itr_url = itinerary_URL + "event/delete/"+str(eventID)
+    itinerary_result = invoke_http(itr_url, method='DELETE')
+    return jsonify(itinerary_result), itinerary_result["code"]
 
 
 # Execute this program if it is run as a main script (not by 'import')
