@@ -572,7 +572,7 @@ function addActivity() {
 
 	var checkValid = moment(startTime, "HH:mm").isBefore(moment(endTime, "HH:mm"));
 
-	var url = "http://localhost:5000/event";
+	var url = "http://localhost:5200/itr/addEvent";
 
 	if (checkValid == true) {
 		document.getElementById("conflictAlert").style.display = "none";
@@ -588,7 +588,7 @@ function addActivity() {
 		};
 
 		var data = JSON.stringify(activity);
-		console.log('outside request')
+
 		var request = new XMLHttpRequest();
 		request.onreadystatechange = function () {
 			if (this.readyState == 4 && this.status == 201) {
