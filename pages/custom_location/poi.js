@@ -9,7 +9,7 @@ var loadFile = function (event) {
 };
 
 /* Initialize timepicker */
-$("#startTime").timepicker({
+$("#openTime").timepicker({
 	timeFormat: "hh:mm p",
 	interval: 15,
 	dropdown: true,
@@ -21,7 +21,7 @@ $("#startTime").timepicker({
 });
 
 /* Initialize timepicker */
-$("#endTime").timepicker({
+$("#closeTime").timepicker({
 	timeFormat: "hh:mm p",
 	interval: 15,
 	zindex: 3500,
@@ -83,31 +83,33 @@ function EnableDisableTextBox(addressChkBox) {
 
 /* Send custom location details to PHP using AJAX */
 function insert_poi() {
-	var url = "../../php/objects/locationTest.php";
+	var url = "http://localhost:5100/poi/create";
 	$img = document.getElementById("imageUrl").files[0].name; //get image file name
 
 	$.ajax({
 		url: url,
 		type: "POST",
-		data: {
-			locTitle: $("#locTitle").val(),
-			locAddress: $("#locAddress").val(),
-			locPostalCode: $("#locPostalCode").val(),
-			locDesc: $("#locDesc").val(),
-			categories: $("#categories").val(),
-			imageUrl: $img,
+		contentType: 'application/json',
+		data: JSON.stringify({
+			name: $("#locTitle").val(),
+			address: $("#locAddress").val(),
+			postalCode: $("#locPostalCode").val(),
+			description: $("#locDesc").val(),
+			locCategory: $("#categories").val(),
 			rating: $('input[name="rate"]:checked').val(),
+			imageUrl: $img,
 			latitude: $("#lat").val(),
 			longitude: $("#lon").val(),
-			venueType: $("#venueType").val(),
+			theme: $("#venueType").val(),
 			businessContact: $("#businessContact").val(),
 			businessEmail: $("#businessEmail").val(),
-			startTime: $("#startTime").val(),
-			endTime: $("#endTime").val(),
+			openTime: $("#openTime").val(),
+			closeTime: $("#closeTime").val(),
 			businessWeb: $("#businessWeb").val(),
-		},
+		}),
 	}).done(function (responseText) {
-		if (responseText == "Success") {
+		console.log(responseText);
+		if (responseText["code"] == 201) {
 			$("#successModal").modal("show"); //Display modal if success
 		}
 	});
