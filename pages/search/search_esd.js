@@ -35,9 +35,9 @@ function call_poi_manager(keyword, categories){
 		}
     }
 
-	// if(keyword == null){
-	// 	keyword = ''
-	// }
+	if(typeof(keyword) == null){
+		keyword = ''
+	}
 
     var url = base_url + '/' + keyword
 
@@ -96,6 +96,9 @@ function display_poi(name, image_uuid, uuid, category, description, type_of_data
 function alvin_search() {
 	// checkUser();
 
+	if(new URL(window.location.href).searchParams.get("keyword") == null){
+		window.location.href = "search_test2.html?keyword="
+	}
 	document.getElementById("searching_poi").value = new URL(window.location.href).searchParams.get("keyword");
 	var keyword = new URL(window.location.href).searchParams.get("keyword");
 	document.getElementById("insert_search_title").innerHTML = keyword;
