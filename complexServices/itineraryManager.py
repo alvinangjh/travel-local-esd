@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_caching import Cache
+from multiprocessing import Pool
 
 import os, sys
 
@@ -12,6 +14,16 @@ import pika
 import json
 
 app = Flask(__name__)
+
+config = {
+    "DEBUG": True,
+    "CACHE_TYPE": "RedisCache",
+    "CACHE_DEFAULT_TIMEOUT": 300,
+    "CACHE_REDIS_URL": "redis://localhost:6379/0"
+}
+
+app.config.from_mapping(config)
+cache = Cache(app)
 CORS(app)
 
 itinerary_URL = "http://localhost:5000/"
@@ -68,37 +80,6 @@ def create_itinerary():
         "message": "Invalid JSON input: " + str(request.get_data())
     }), 400
 
-#get all user itinerary
-@app.route("/itr/allITR/<int:userID>")
-def getAllItinerary(userID):
-    itr_url = itinerary_URL + "itinerary/all/"+str(userID)
-    itinerary_result = invoke_http(itr_url)
-    return jsonify(itinerary_result), itinerary_result["code"]
-
-#get specific itinerary by itineraryID
-@app.route("/itr/getSpecificITR/<int:itineraryID>")
-def getSpecificItinerary(itineraryID):
-    itr_url = itinerary_URL + "itinerary/"+str(itineraryID)
-    itinerary_result = invoke_http(itr_url)
-    return jsonify(itinerary_result), itinerary_result["code"]
-
-#update specific itinerary
-@app.route("/itr/updateITR/<int:itineraryID>", methods=['PUT'])
-def update_itinerary(itineraryID):
-
-    data = request.get_json()
-
-    itr_url = itinerary_URL + "itinerary/update/"+str(itineraryID)
-    itinerary_result = invoke_http(itr_url, method='PUT', json = data)
-    return jsonify(itinerary_result), itinerary_result["code"]
-
-#delete specific itinerary
-@app.route("/itr/deleteITR/<int:itineraryID>", methods = ['DELETE'])
-def delete_itinerary(itineraryID):
-    itr_url = itinerary_URL + "itinerary/delete/"+str(itineraryID)
-    itinerary_result = invoke_http(itr_url, method='DELETE')
-    return jsonify(itinerary_result), itinerary_result["code"]
-
 #add new event to itinerary
 @app.route("/itr/addEvent", methods=['POST'])
 def add_event():
@@ -122,7 +103,18 @@ def add_event():
 
 #get all events in itinerary + required info for display
 @app.route("/itr/allEvents/<int:itineraryID>")
+# @cache.cached(timeout=60)
 def getAllEventsInItinerary(itineraryID):
+    rv = cache.get(str(itineraryID))
+
+    if rv != None:
+        return rv
+
+    itiDetails = get_specific_itinerary(itineraryID)
+
+    if itiDetails["code"] not in range(200,300):
+        return itiDetails, itiDetails["code"]
+
     final_itinerary_URL = itinerary_URL +"event/" + str(itineraryID)
 
     event_results = invoke_http(final_itinerary_URL)
@@ -131,38 +123,40 @@ def getAllEventsInItinerary(itineraryID):
     if code in range(200,300):
         dataList = event_results["data"]
         result = []
-        for data in dataList:
-            temp = data
-            url = poiManager_URL + data["locType"] +"/"+data["poiUUID"] +"/" + data["locCategory"]
-            event_details = invoke_http(url)
-            temp["POIDetails"] = event_details['data']
+        # for data in dataList:
+        #     temp = data
+        #     url = poiManager_URL + data["locType"] +"/"+data["poiUUID"] +"/" + data["locCategory"]
+        #     event_details = invoke_http(url)
+        #     temp["POIDetails"] = event_details['data']
             
-            result.append(temp)
-        
-        return jsonify({
-            "code": 200,
-            "data": result
-        })
+            # result.append(temp)
+        with Pool() as p:
+            result.append(p.map(call_poiManager, dataList))
+
+        rv = (jsonify({
+            "code":200,
+            "itiData": itiDetails["data"],
+            "eventData": result
+        }), 200)
+
+        cache.set(str(itineraryID), rv, timeout=86400)
+        return rv
     else:
         return jsonify(event_results), code
 
+def get_specific_itinerary(itineraryID):
+    final_itinerary_URL = itinerary_URL+"/itinerary/"+str(itineraryID)
 
-#update event
-@app.route("/itr/updateEvent/<int:eventID>", methods =["PUT"])
-def updateEvent(eventID):
-    data = request.get_json()
+    result = invoke_http(final_itinerary_URL)
+    return result
 
-    itr_url = itinerary_URL + "event/update/"+str(eventID)
-    itinerary_result = invoke_http(itr_url, method='PUT', json = data)
-    return jsonify(itinerary_result), itinerary_result["code"]
-
-#delete event
-@app.route("/itr/deleteEvent/<int:eventID>", methods=["DELETE"])
-def deleteEvent(eventID):
-    itr_url = itinerary_URL + "event/delete/"+str(eventID)
-    itinerary_result = invoke_http(itr_url, method='DELETE')
-    return jsonify(itinerary_result), itinerary_result["code"]
-
+def call_poiManager(data):
+    temp = data
+    url = poiManager_URL + data["locType"] +"/"+data["poiUUID"] +"/" + data["locCategory"]
+    event_details = invoke_http(url)
+    temp["POIDetails"] = event_details['data']
+    
+    return temp
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

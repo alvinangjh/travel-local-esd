@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
+from flask_caching import Cache
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local_itinerary' #RMB TO UPDATE THIS
@@ -9,6 +11,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+config = {
+    "DEBUG": True,
+    "CACHE_TYPE": "RedisCache",
+    "CACHE_DEFAULT_TIMEOUT": 300,
+    "CACHE_REDIS_URL": "redis://localhost:6379/0"
+}
+
+app.config.from_mapping(config)
+cache = Cache(app)
 CORS(app)  
 
 class Itinerary(db.Model): #1 class refer to 1 row
@@ -141,6 +152,7 @@ def update_itinerary(itineraryID):
         except:
             pass
         db.session.commit()
+        cache.delete(str(itineraryID))
         return jsonify(
             {
                 "code": 200,
@@ -164,6 +176,7 @@ def delete_itinerary(itineraryID):
     if itinerary:
         db.session.delete(itinerary)
         db.session.commit()
+        cache.delete(str(itineraryID))
         return jsonify(
             {
                 "code": 200,
@@ -200,7 +213,7 @@ def addEvent():
                 "message": "An error occurred adding the Event."
             }
         ), 500
-
+    cache.delete(str(data["itineraryID"]))
     return jsonify(
         {
             "code": 201,
@@ -245,6 +258,7 @@ def update_activity(eventID):
         except:
             pass
         db.session.commit()
+        cache.delete(str(event.json()["itineraryID"]))
         return jsonify(
             {
                 "code": 200,
@@ -265,9 +279,11 @@ def update_activity(eventID):
 @app.route("/event/delete/<int:eventID>", methods=['DELETE'])
 def delete_activity(eventID):
     event = Event.query.filter_by(eventID=eventID).first()
+    itineraryID = event.json()["itineraryID"]
     if event:
         db.session.delete(event)
         db.session.commit()
+        cache.delete(str(itineraryID))
         return jsonify(
             {
                 "code": 200,
