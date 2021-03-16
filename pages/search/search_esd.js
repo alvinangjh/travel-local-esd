@@ -64,6 +64,7 @@ function parsing_data(data, type_of_data){
 
 function display_poi(name, image_uuid, uuid, category, description, type_of_data) {
 	const apiKey = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx";
+	console.log(type_of_data)
 	// var category_type = type_of_dataset(category);
 
     if(type_of_data == 'TA'){
@@ -94,10 +95,10 @@ function display_poi(name, image_uuid, uuid, category, description, type_of_data
 
 
 function alvin_search() {
-	// checkUser();
+	checkUser();
 
 	if(new URL(window.location.href).searchParams.get("keyword") == null){
-		window.location.href = "search_test2.html?keyword="
+		window.location.href = "search.html?keyword="
 	}
 	document.getElementById("searching_poi").value = new URL(window.location.href).searchParams.get("keyword");
 	var keyword = new URL(window.location.href).searchParams.get("keyword");
@@ -211,12 +212,12 @@ function new_search() {
 }
 
 function redirect(uuid, category, type_of_data) {
-	window.location.href = "specific_poi_design2.html?uuid=" + uuid + "&category=" + category + "&locType=" + type_of_data;
+	window.location.href = "specific_poi_design.html?uuid=" + uuid + "&category=" + category + "&locType=" + type_of_data;
 }
 
 
 function call_uuid_api(uuid, category, locType) {
-	// checkUser();
+	checkUser();
 
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function () {
@@ -226,7 +227,7 @@ function call_uuid_api(uuid, category, locType) {
 			var title = data.name;
 			var rating = data.rating;
 			var description = data.description;
-			var reviews = data.reviews; // array
+			var reviews = data.reviews; // arrayF
 			var lat = data.latitude;
 			var lng = data.longitude;
 			var postal = data.postalCode;
@@ -488,11 +489,11 @@ function creating_reviews_html(reviews) {
 }
 
 function redirect_to_search_page(keyword) {
-	window.location.href = "search_test2.html?keyword=" + keyword;
+	window.location.href = "search.html?keyword=" + keyword;
 }
 
 function startPlanning() {
-	var url = "http://localhost:5200/itr/allITR/2";
+	var url = "http://localhost:5000/itinerary/all/" + sessionStorage.getItem("userID");
 
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function () {
@@ -566,12 +567,12 @@ function addActivity() {
 	var startTime = moment($("#startTime").val(), ["hh:mm A"]).format("HH:mm");
 	var endTime = moment($("#endTime").val(), ["hh:mm A"]).format("HH:mm");
 	var activityDate = $("#ddlActivityDate :selected").val();
-	var locDataset = new URL(window.location.href).searchParams.get("type");
+	var locDataset = new URL(window.location.href).searchParams.get("category");
 	$("#btnGoToItinerary").attr("onclick", "goToItinerary(" + selectedItinerary + ")");
 
 	var checkValid = moment(startTime, "HH:mm").isBefore(moment(endTime, "HH:mm"));
 
-	var url = "http://localhost:5200/itr/addEvent";
+	var url = "http://localhost:5000/event";
 
 	if (checkValid == true) {
 		document.getElementById("conflictAlert").style.display = "none";
@@ -607,5 +608,28 @@ function addActivity() {
 		request.send(data);
 	} else {
 		document.getElementById("conflictAlert").style.display = "";
+	}
+}
+
+function filterActivityDate() {
+	var selected = $("#ddlItinerary option:selected").val();
+	var data = JSON.parse(sessionStorage.getItem("test")).data;
+	console.log(data)
+	for (item of data) {
+		if (item.itineraryID == selected) {
+			var dateArray = getDates(new Date(item.startDate), new Date(item.endDate));
+
+			$("#ddlActivityDate").empty();
+
+			for (var j = 0; j < dateArray.length; j++) {
+				var formattedDate = moment(dateArray[j]).format("DD MMM YYYY");
+				var otherFormatDate = moment(dateArray[j]).format("YYYY-MM-DD");
+
+				var elem = document.createElement("option");
+				elem.textContent = formattedDate;
+				elem.value = otherFormatDate;
+				$("#ddlActivityDate").append(elem);
+			}
+		}
 	}
 }
