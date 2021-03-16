@@ -54,7 +54,7 @@ class Recommendation(db.Model): #1 class refer to 1 row
         self.locType = locType
 
     def json(self):
-        return {"theme":self.theme, "poiUUID":self.poiUUID, 'name':self.name, 'address':self.address, 'postalCode':self.postalCode, 'description':self.description, 'locCategory': self.locCategory, 'rating': self.rating, 'imageURL': self.imageURL, 'latitude': self.latitude, 'longitude': self.longitude, 'businessContact': self.businessContact, 'businessEmail': self.businessEmail, 'startTime': str(self.startTime), 'endTime': str(self.endTime), 'businessWeb': self.businessweb, 'locType':self.locType}
+        return {"theme":self.theme, "poiUUID":self.poiUUID, 'name':self.name, 'address':self.address, 'postalCode':self.postalCode, 'description':self.description, 'locCategory': self.locCategory, 'rating': self.rating, 'imageURL': self.imageURL, 'latitude': self.latitude, 'longitude': self.longitude, 'businessContact': self.businessContact, 'businessEmail': self.businessEmail, 'startTime': str(self.startTime), 'endTime': str(self.endTime), 'businessWeb': self.businessWeb, 'locType':self.locType}
 
 @app.route("/recommend/<string:theme>")
 def get_specific_theme(theme):

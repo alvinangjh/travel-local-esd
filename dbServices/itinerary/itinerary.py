@@ -159,7 +159,7 @@ def update_itinerary(itineraryID):
 
 #Delete itinerary by itineraryID
 @app.route("/itinerary/delete/<int:itineraryID>", methods=['DELETE'])
-def delete_book(itineraryID):
+def delete_itinerary(itineraryID):
     itinerary = Itinerary.query.filter_by(itineraryID=itineraryID).first()
     if itinerary:
         db.session.delete(itinerary)

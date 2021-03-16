@@ -23,11 +23,13 @@ CATEGORY = {
     "Attractions": "attractions",
     "Malls & Shops": "shops",
     "Venues": "venue",
-    "Food & Beverages": "food-beverages",
+    "Food & Beverages": "food_beverages",
     "Accommodation": "accommodation",
     "All": "all",
     "Walking Trail": "walking_trail",
-    "Events": "event"
+    "Events": "event",
+    "food_beverages": "food-beverages",
+    "walking_trail": "walking-trail"
 }
 
 @app.route("/search/<string:keyword>")
@@ -117,6 +119,10 @@ def get_HG_by_keyword(keyword):
 def searchSpecificEvent(locType, poiUUID, locCategory = None):
     if locType == "TA":
         #call STB API for data
+        try:
+            locCategory = CATEGORY[locCategory]
+        except:
+            pass
         url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
         event_result = invoke_http(url)
         try:
