@@ -132,35 +132,18 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
     
     if rv == None:
 
-      if locType == "TA":
-          #call STB API for data
-          try:
-              locCategory = CATEGORY[locCategory]
-          except:
-              pass
-          url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
-          event_result = invoke_http(url)
-          try:
-              code = event_result['status']['code']
-          except:
-              code = event_result["code"]
-
-          if code in range(200,300):
-              #data clean up and return only useful info
-              data = event_result["data"][0]
-
-              result = {
-                  "name": data["name"],
-                  "poiUUID": poiUUID,
-                  "description": data["body"],
-                  "reviews": data["reviews"],
-                  "rating": data["rating"],
-                  "latitude": data["location"]["latitude"],
-                  "longitude": data["location"]["longitude"],
-                  "postalCode": data["address"]["postalCode"],
-                  "locCategory": data["type"]
-              }
-
+        if locType == "TA":
+            #call STB API for data
+            try:
+                locCategory = CATEGORY[locCategory]
+            except:
+                pass
+            url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
+            event_result = invoke_http(url)
+            try:
+                code = event_result['status']['code']
+            except:
+                code = event_result["code"]
 
             if code in range(200,300):
                 #data clean up and return only useful info
