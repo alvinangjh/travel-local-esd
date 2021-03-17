@@ -1,6 +1,5 @@
 function call_poi_manager(keyword, categories){
     var base_url = 'http://localhost:5100/search/';
-
     var hg_list = [];
     var stb_list = [];
     var request = new XMLHttpRequest();
@@ -36,7 +35,7 @@ function call_poi_manager(keyword, categories){
 		}
     }
 
-	if(keyword == null){
+	if(typeof(keyword) == null){
 		keyword = ''
 	}
 
@@ -65,6 +64,7 @@ function parsing_data(data, type_of_data){
 
 function display_poi(name, image_uuid, uuid, category, description, type_of_data) {
 	const apiKey = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx";
+	console.log(type_of_data)
 	// var category_type = type_of_dataset(category);
 
     if(type_of_data == 'TA'){
@@ -95,8 +95,11 @@ function display_poi(name, image_uuid, uuid, category, description, type_of_data
 
 
 function alvin_search() {
-	// checkUser();
+	checkUser();
 
+	if(new URL(window.location.href).searchParams.get("keyword") == null){
+		window.location.href = "search.html?keyword="
+	}
 	document.getElementById("searching_poi").value = new URL(window.location.href).searchParams.get("keyword");
 	var keyword = new URL(window.location.href).searchParams.get("keyword");
 	document.getElementById("insert_search_title").innerHTML = keyword;
@@ -118,36 +121,31 @@ function logOut() {
 }
 
 function filter() {
+	var checkboxes = document.getElementsByName("categories");
+	var categories_array = [];
+
+	for (var checkbox of checkboxes) {
+		if (checkbox.checked) {
+			categories_array.push(checkbox.getAttribute("value"));
+		}
+	}
+
 	if (document.getElementById("tourist_attractions").checked) {
-		var checkboxes = document.getElementsByName("categories");
-		var categories_array = [];
 
-		for (var checkbox of checkboxes) {
-			if (checkbox.checked) {
-				categories_array.push(checkbox.getAttribute("value"));
-			}
-        }
+		let data = sessionStorage.getItem('stb_list');
+		data = JSON.parse(data);
 
-        let data = sessionStorage.getItem('stb_list');
-        data = JSON.parse(data);
-
-        new_str = ''
-        for(i=0; data.length > i;i++){
-            if((categories_array.includes(data[i].locCategory)) || (categories_array.length == 0)){
-		        new_str += parsing_data(data[i], 'TA');
-            }
-        }
-        document.getElementById("insert_poi_result").innerHTML = new_str + "</div> </div>";
-
-	} else {
-		var checkboxes = document.getElementsByName("categories");
-		var categories_array = [];
-
-		for (var checkbox of checkboxes) {
-			if (checkbox.checked) {
-				categories_array.push(checkbox.getAttribute("value"));
+		new_str = ''
+		for(i=0; data.length > i;i++){
+			if((categories_array.includes(data[i].locCategory)) || (categories_array.length == 0)){
+				new_str += parsing_data(data[i], 'TA');
 			}
 		}
+		document.getElementById("insert_poi_result").innerHTML = new_str + "</div> </div>";
+
+	} 
+	
+	else if(document.getElementById("hidden_gem").checked) {
 
         let data = sessionStorage.getItem('hg_list');
         data = JSON.parse(data);
@@ -157,12 +155,36 @@ function filter() {
             if((categories_array.includes(data[i].locCategory)) || (categories_array.length == 0)){
 		        new_str += parsing_data(data[i], 'HG');
             }
-        }
+        }	
         document.getElementById("insert_poi_result").innerHTML = new_str + "</div> </div>";
+	}
+	else{
+
+		let data_hg = sessionStorage.getItem('hg_list');
+		let data_ta = sessionStorage.getItem('stb_list');
+        data_hg = JSON.parse(data_hg);
+		data_ta = JSON.parse(data_ta);
+
+        new_str = ''
+        for(i=0; data_hg.length > i;i++){
+            if((categories_array.includes(data_hg[i].locCategory)) || (categories_array.length == 0)){
+		        new_str += parsing_data(data_hg[i], 'HG');
+            }
+        }
+
+		for(i=0; data_ta.length > i;i++){
+            if((categories_array.includes(data_ta[i].locCategory)) || (categories_array.length == 0)){
+		        new_str += parsing_data(data_ta[i], 'TA');
+            }
+        }
+
+		document.getElementById("insert_poi_result").innerHTML = new_str + "</div> </div>";
+
 	}
 }
 
 function new_search() {
+	console.log('123')
     var checkboxes = document.getElementsByName("categories");
     var categories_array = [];
 
@@ -190,12 +212,12 @@ function new_search() {
 }
 
 function redirect(uuid, category, type_of_data) {
-	window.location.href = "specific_poi_design2.html?uuid=" + uuid + "&category=" + category + "&locType=" + type_of_data;
+	window.location.href = "specific_poi_design.html?uuid=" + uuid + "&category=" + category + "&locType=" + type_of_data;
 }
 
 
 function call_uuid_api(uuid, category, locType) {
-	// checkUser();
+	checkUser();
 
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function () {
@@ -205,12 +227,12 @@ function call_uuid_api(uuid, category, locType) {
 			var title = data.name;
 			var rating = data.rating;
 			var description = data.description;
-			var reviews = data.reviews; // array
+			var reviews = data.reviews; // arrayF
 			var lat = data.latitude;
 			var lng = data.longitude;
 			var postal = data.postalCode;
 			var type_of_poi = data.locCategory;
-            var business_hours = {'openTime': data.startTime, 'closeTime' : data.endTime};
+            var business_hours = {'openTime': data.openTime, 'closeTime' : data.closeTime};
             var hp_contact = data.businessContact;
             var email = data.businessEmail;
             var website = data.businessWeb;
@@ -229,7 +251,8 @@ function call_uuid_api(uuid, category, locType) {
 				type_of_poi,
 				reviews,
 				email,
-				website
+				website,
+				locType
 			);
 		}
 	};
@@ -255,12 +278,19 @@ function display_specific_poi(
 	type_of_poi,
 	reviews,
 	email,
-	website
+	website,
+	locType
 ) {
 	var insert_poi = document.getElementById("insert_poi");
 	const apiKey = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx";
 	var map_link = call_onemap_api(lat, lng, postal);
-	var image_link = "https://tih-api.stb.gov.sg/media/v1/download/uuid/" + image_uuid + "?apikey=" + apiKey;
+	
+	if(locType == 'TA'){
+		var image_link = "https://tih-api.stb.gov.sg/media/v1/download/uuid/" + image_uuid + "?apikey=" + apiKey;
+	}
+	else{
+		var image_link = '../../images/' + image_uuid;
+	}
 
 	insert_poi.setAttribute("style", "width:80%; margin:auto;");
 	// insert_poi.setAttribute('class','row');
@@ -459,5 +489,151 @@ function creating_reviews_html(reviews) {
 }
 
 function redirect_to_search_page(keyword) {
-	window.location.href = "search_test2.html?keyword=" + keyword;
+	window.location.href = "search.html?keyword=" + keyword;
+}
+
+function startPlanning() {
+	var url = "http://localhost:5000/itinerary/all/" + sessionStorage.getItem("userID");
+
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function () {
+		if (this.readyState == 4 && this.status == 200) {
+			$("#ddlActivityDate").empty();
+			$("#ddlItinerary").empty();
+			var data = JSON.parse(request.responseText).data;
+			console.log(data)
+			if (data.length == 0) {
+				$("#emptyModal").modal("show");
+			} else {
+				sessionStorage.setItem("test", request.responseText);
+				var selectElem = document.getElementById("ddlItinerary");
+
+				for (item of data) {
+					var el = document.createElement("option");
+					el.textContent = item.name;
+					el.value = item.itineraryID;
+					selectElem.appendChild(el);
+				}
+
+				var dateArray = getDates(new Date(data[0].startDate), new Date(data[0].endDate));
+
+				var activityElem = document.getElementById("ddlActivityDate");
+
+				for (var j = 0; j < dateArray.length; j++) {
+					var formattedDate = moment(dateArray[j]).format("DD MMM YYYY");
+					var otherFormatDate = moment(dateArray[j]).format("YYYY-MM-DD");
+
+					var elem = document.createElement("option");
+					elem.textContent = formattedDate;
+					elem.value = otherFormatDate;
+					activityElem.appendChild(elem);
+				}
+
+				$("#exampleModal").modal("show");
+			}
+		}
+	};
+
+	request.open("GET", url, true);
+
+	request.send();
+}
+
+function getDates(startDate, stopDate) {
+	var dateArray = new Array();
+	var currentDate = startDate;
+	while (currentDate <= stopDate) {
+		dateArray.push(currentDate);
+		currentDate = currentDate.addDays(1);
+	}
+	return dateArray;
+}
+
+Date.prototype.addDays = function (days) {
+	var dat = new Date(this.valueOf());
+	dat.setDate(dat.getDate() + days);
+	return dat;
+};
+
+function addActivity() {
+	if (new URL(window.location.href).searchParams.get("locID") != null) {
+		var poiUUID = new URL(window.location.href).searchParams.get("locID");
+	} else {
+		var poiUUID = new URL(window.location.href).searchParams.get("uuid");
+	}
+
+	var locType = new URL(window.location.href).searchParams.get("locType");
+	var selectedItinerary = $("#ddlItinerary :selected").val();
+	var startTime = moment($("#startTime").val(), ["hh:mm A"]).format("HH:mm");
+	var endTime = moment($("#endTime").val(), ["hh:mm A"]).format("HH:mm");
+	var activityDate = $("#ddlActivityDate :selected").val();
+	var locDataset = new URL(window.location.href).searchParams.get("category");
+	$("#btnGoToItinerary").attr("onclick", "goToItinerary(" + selectedItinerary + ")");
+
+	var checkValid = moment(startTime, "HH:mm").isBefore(moment(endTime, "HH:mm"));
+
+	var url = "http://localhost:5200/itr/addEvent";
+
+	if (checkValid == true) {
+		document.getElementById("conflictAlert").style.display = "none";
+		console.log(selectedItinerary)
+		var activity = {
+			poiUUID: poiUUID,
+			startTime: startTime,
+			endTime: endTime,
+			eventDate: activityDate,
+			locType: locType,
+			locCategory: locDataset,
+			itineraryID: selectedItinerary,
+		};
+
+		var data = JSON.stringify(activity);
+
+		var request = new XMLHttpRequest();
+		request.onreadystatechange = function () {
+			if (this.readyState == 4 && this.status == 201) {
+				//hide success modal
+				return_data = JSON.parse(request.responseText).code
+				if (return_data == 201) {
+					$("#exampleModal").modal("hide");
+					$("#successModal").modal("show");
+				}
+			}
+		};
+
+		request.open("POST", url, true);
+
+		request.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+
+		request.send(data);
+	} else {
+		document.getElementById("conflictAlert").style.display = "";
+	}
+}
+
+function filterActivityDate() {
+	var selected = $("#ddlItinerary option:selected").val();
+	var data = JSON.parse(sessionStorage.getItem("test")).data;
+	console.log(data)
+	for (item of data) {
+		if (item.itineraryID == selected) {
+			var dateArray = getDates(new Date(item.startDate), new Date(item.endDate));
+
+			$("#ddlActivityDate").empty();
+
+			for (var j = 0; j < dateArray.length; j++) {
+				var formattedDate = moment(dateArray[j]).format("DD MMM YYYY");
+				var otherFormatDate = moment(dateArray[j]).format("YYYY-MM-DD");
+
+				var elem = document.createElement("option");
+				elem.textContent = formattedDate;
+				elem.value = otherFormatDate;
+				$("#ddlActivityDate").append(elem);
+			}
+		}
+	}
+}
+
+function goToItinerary(id) {
+	window.location.href = "../itinerary_detail/itinerary_details.html?id=" + id + "&own=yes";
 }
