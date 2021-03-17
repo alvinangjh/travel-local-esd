@@ -168,18 +168,18 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
 
                 try: 
                     if len(data['businessHour']) != 0:
-                        startTime = datetime.strptime(data["businessHour"][0]["openTime"], "%H:%M").strftime("%I:%M %p")
+                        openTime = datetime.strptime(data["businessHour"][0]["openTime"], "%H:%M").strftime("%I:%M %p")
 
-                        endTime = datetime.strptime(data["businessHour"][0]["closeTime"], "%H:%M").strftime("%I:%M %p")
+                        closeTime = datetime.strptime(data["businessHour"][0]["closeTime"], "%H:%M").strftime("%I:%M %p")
 
-                        result["startTime"] = startTime
-                        result["endTime"] = endTime
+                        result["openTime"] = openTime
+                        result["closeTime"] = closeTime
                     else:
-                        result["startTime"] = "??"
-                        result["endTime"] = "??"
+                        result["openTime"] = "??"
+                        result["closeTime"] = "??"
                 except:
-                    result["startTime"] = "??"
-                    result["endTime"] = "??"
+                    result["openTime"] = "??"
+                    result["closeTime"] = "??"
                 
                 if data["officialEmail"] == "":
                     result["businessEmail"] = "-"

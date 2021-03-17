@@ -232,7 +232,7 @@ function call_uuid_api(uuid, category, locType) {
 			var lng = data.longitude;
 			var postal = data.postalCode;
 			var type_of_poi = data.locCategory;
-            var business_hours = {'openTime': data.startTime, 'closeTime' : data.endTime};
+            var business_hours = {'openTime': data.openTime, 'closeTime' : data.closeTime};
             var hp_contact = data.businessContact;
             var email = data.businessEmail;
             var website = data.businessWeb;
