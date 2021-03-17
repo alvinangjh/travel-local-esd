@@ -212,7 +212,7 @@ function delete_itin(id) {
 function add_itinerary() {
     var convertDateTime = dateFormat($("#startDate").val());
     moment(convertDateTime.startDate).format("ddd, DD MMM YYYY");
-
+    // console.log(get_userID);
 	var itinerary = {
 		name: $("#itinName").val(),
         startDate: dateFormat($("#startDate").val()),
@@ -220,8 +220,9 @@ function add_itinerary() {
 		theme: $("#itinType").val(),
 		userID: sessionStorage.getItem("userID"),
         shared: "0",
-        userID: userID,
+        userID: get_userID,
 	};
+    console.log(itinerary);
 	var data = JSON.stringify(itinerary);
 	let url = "http://localhost:5200/itr/createITR";
     $.ajax({ // create a new itinerary
