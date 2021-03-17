@@ -219,7 +219,8 @@ function add_itinerary() {
 		endDate: dateFormat($("#endDate").val()),
 		theme: $("#itinType").val(),
 		userID: sessionStorage.getItem("userID"),
-        shared: "0"
+        shared: "0",
+        userID: userID,
 	};
 	var data = JSON.stringify(itinerary);
 	let url = "http://localhost:5200/itr/createITR";
