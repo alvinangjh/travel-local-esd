@@ -2,12 +2,11 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_caching import Cache
 import os, sys
-
 import requests
 from invokes import invoke_http
 from datetime import datetime
-
-# import amqp_setup
+sys.path.append("../")
+import amqp_setup
 import pika
 import json
 config = {
@@ -41,24 +40,37 @@ CATEGORY = {
 @app.route("/search/<string:keyword>")
 @app.route("/search//")
 def searchEventsByKeyword(keyword = ""):
+    try:
+        userID = request.args.get("userID")
+    except:
+        return jsonify({
+            "code": 400,
+            "data": "UserID not found"
+        })
     #call function to get info from Hidden Gem
     hgFound, hgData = get_HG_by_keyword(keyword)
 
     #call function to get info from STB API
     stbFound, stbData = get_STB_by_keyword(keyword)
-
-    if not hgFound and not stbFound:        
-        return jsonify({
-            "code": 404,
+    succ = "success"
+    if not hgFound and not stbFound:
+        result = {
+            "code":404,
             "hgData": hgData,
             "stbData": stbData
-        }), 404
+        }
+        code = 404 
+        succ = "error"
 
-    return jsonify({
-        "code": 200,
+    result = {
+        "code":200,
         "hgData": hgData,
         "stbData": stbData
-    })
+    }
+    code = 200
+
+    logging(userID, "searchKeyword", result, succ)
+    return jsonify(result), code
 
 def get_STB_by_keyword(keyword):
     
@@ -127,11 +139,15 @@ def get_HG_by_keyword(keyword):
 @app.route("/search/<string:locType>/<string:poiUUID>/<string:locCategory>")
 # @cache.cached(timeout=43200)
 def searchSpecificEvent(locType, poiUUID, locCategory = None):
-
+    try:
+        userID = request.args.get("userID")
+    except:
+        return jsonify({
+            "code": 400,
+            "data": "UserID not found"
+        })
     rv = cache.get(poiUUID)
-    
     if rv == None:
-
         if locType == "TA":
             #call STB API for data
             try:
@@ -223,27 +239,59 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
             code = 404
 
         cache.set(poiUUID, (result,code), timeout = 43200)
+        logging(userID,"searchUUID", result, "success" if code in range (200,300) else "error")
         return result, code
     
+    try:
+        # print(rv[0]["data"])
+        logging(userID, "searchUUID", rv[0]["data"], "success")
+    except:
+        logging(userID, "searchUUID", rv[0].get_json()["data"], "success")
     return rv
 
 @app.route("/poi/create", methods= ["POST"])
 def create_hidden_gem():
+    try:
+        userID = request.args.get("userID")
+    except:
+        return jsonify({
+            "code": 400,
+            "data": "UserID not found"
+        })
     if request.is_json:
         try:
             hidden_gem = request.get_json()
-            # print("\nReceived an hidden_gem in JSON:", hidden_gem)
+            
             creation_result = invoke_http(hg_URL,method='POST', json = hidden_gem)
-            # print('creation_result:', creation_result)
+            
+            logging(userID, "createHG", creation_result["data"], "success" if creation_result["code"] in range (200,300) else "error")
             return jsonify(creation_result), creation_result["code"]
         except Exception as e:
             pass  # do nothing.
-
-    # if reached here, not a JSON request.
-    return jsonify({
+    
+    result = {
         "code": 400,
         "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
+    }
+    logging(userID, "createHG", result, "error")
+    # if reached here, not a JSON request.
+    return jsonify({result}), 400
+
+
+def logging(userID, action, logDetails, succ):
+    try:
+        message = {
+            "userID": userID,
+            "action": action,
+            "logDetails": json.dumps(logDetails)
+        }
+    except:
+        message = {
+            "userID": userID,
+            "action": action,
+            "logDetails": json.dumps(logDetails.get_json()["data"])
+        }
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=succ+".log", body=json.dumps(message))
 
 
 # Execute this program if it is run as a main script (not by 'import')

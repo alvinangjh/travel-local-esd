@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import json
-import os
+import os, sys
+sys.path.append("../../")
 import amqp_setup
 
 from flask import Flask, request, jsonify
@@ -38,7 +39,7 @@ class Log(db.Model): #1 class refer to 1 row
         return {"logID":self.logID, "timeStamp": str(self.timeStamp), "userID": self.userID, "action": self.action, "logDetails": self.logDetails, "status": self.status}
 
 
-monitorBindingKey = '*.*.log' #e.g. addEvent.error.log refers to error log of an add event action, addEvent.success.log refers to success log of an add event action 
+monitorBindingKey = '*.log' #e.g. addEvent.error.log refers to error log of an add event action, addEvent.success.log refers to success log of an add event action 
 
 def receiveOrderLog():
     amqp_setup.check_setup()
@@ -64,7 +65,8 @@ def processActionLog(properties, status):
         try:
             db.session.add(logToAdd)
             db.session.commit()
-        except:
+        except Exception as e:
+            print(e)
             return jsonify(
                 {
                     "code": 500,

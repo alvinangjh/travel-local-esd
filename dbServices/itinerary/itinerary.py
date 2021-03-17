@@ -125,7 +125,7 @@ def get_specific_itinerary(itineraryID):
     return jsonify(
         {
             "code": 404,
-            "message": "Itinerary not found."
+            "data": "Itinerary not found."
         }
     ), 404
 
