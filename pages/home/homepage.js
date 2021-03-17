@@ -14,12 +14,11 @@ $.ajax({ //displaying user itin cards
             </div></div>`;
 
         } else {
-            // console.log(itineraries.data[0].startDate);
             let startDate = null;
             var itins_view = document.getElementById("my_itins");
             itins_view.innerHTML = "";
             for (let i = 0; i < itineraries.data.length; i++) {
-                // console.log(stringDateConvert(itineraries.data[i].startDate));
+                // console.log(itineraries.data[i]);
                 var new_card = document.createElement("div");
                 var theme = capitalizeFirstLetter(itineraries.data[i].theme);
                 startDate = stringDateConvert(itineraries.data[i].startDate);
@@ -41,8 +40,7 @@ $.ajax({ //displaying user itin cards
             }
         }
         
-        console.log("success");
-        // console.log(data);
+        // console.log("User Itin cards success");
         }
     });
 
@@ -174,13 +172,13 @@ function open_reco_Modal(itin) {
     $.ajax({ // populate recommendation cards in modal
         url: url,
         success: function(response) {
-            console.log(response.data);
+            // console.log(response.data);
             var reco_view = document.getElementById("recommended_events");
             reco_view.innerHTML = "";
             for (var i = 0; i < response.data.length; i++){
                 var new_card = document.createElement("div");
                 var poiURL = `http://localhost/travel-local-esd/pages/search/specific_poi_design.html?uuid=${response.data[i].poiUUID}&type=${response.data[i].locCategory}&locType=${response.data[i].locType}`;
-                console.log(poiURL);
+                // console.log(poiURL);
                 new_card.className = "col-4";
                 new_card.innerHTML = `
                     <div class="card mx-auto mb-4" style="width: 14rem;">
@@ -255,6 +253,8 @@ function dateFormat(date) {
 
 //Capitalize card theme for consistency
 function stringDateConvert(string) {
-	return string.substring(5,16);
+    string = string.substring(5,16);
+    var words = string.split(" ");
+    words[1] = moment().month(words[1]).format("M");
+	return words.join("/");
 }
-
