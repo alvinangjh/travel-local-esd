@@ -78,7 +78,8 @@ def create_hg():
     ), 201
 
 @app.route("/hiddengem/all/<string:keyword>")
-def get_all_hg(keyword):
+@app.route("/hiddengem/all/")
+def get_all_hg(keyword = ""):
     hgList = HG.query.filter(HG.name.like("%{}%".format(keyword))).all()
 
     if len(hgList):

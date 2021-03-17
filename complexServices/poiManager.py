@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+from flask_caching import Cache
 import os, sys
 
 import requests
@@ -10,28 +10,37 @@ from datetime import datetime
 # import amqp_setup
 import pika
 import json
-
+config = {
+    "DEBUG": True,
+    "CACHE_TYPE": "RedisCache",
+    "CACHE_DEFAULT_TIMEOUT": 300,
+    "CACHE_REDIS_URL": "redis://localhost:6379/0"
+}
 app = Flask(__name__)
+cache = Cache(app, config = config)
 CORS(app)
 
 itinerary_URL = "http://localhost:5000/"
 hg_URL = "http://localhost:5001/hiddengem"
 STB_API_key = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx"
-DATASET = "accommodation,attractions,event,food_beverages,shops,venue,walking_trail"
+DATASET = "accommodation,attractions,food_beverages,shops,venue,walking_trail"
 stb_base_URL = "https://tih-api.stb.gov.sg/content/v1/"
 CATEGORY = {
     "Attractions": "attractions",
     "Malls & Shops": "shops",
     "Venues": "venue",
-    "Food & Beverages": "food-beverages",
+    "Food & Beverages": "food_beverages",
     "Accommodation": "accommodation",
     "All": "all",
     "Walking Trail": "walking_trail",
-    "Events": "event"
+    "Events": "event",
+    "food_beverages": "food-beverages",
+    "walking_trail": "walking-trail"
 }
 
 @app.route("/search/<string:keyword>")
-def searchEventsByKeyword(keyword):
+@app.route("/search//")
+def searchEventsByKeyword(keyword = ""):
     #call function to get info from Hidden Gem
     hgFound, hgData = get_HG_by_keyword(keyword)
 
@@ -52,8 +61,10 @@ def searchEventsByKeyword(keyword):
     })
 
 def get_STB_by_keyword(keyword):
-
-    url = stb_base_URL+"/search/all?dataset="+DATASET+"&apikey="+STB_API_key+"&keyword="+keyword
+    
+    url = stb_base_URL+"/search/all?dataset="+DATASET+"&apikey="+STB_API_key
+    if keyword != "":
+        url+= "&keyword="+keyword
 
     event_result = invoke_http(url)
     code = event_result["status"]["code"]
@@ -114,94 +125,107 @@ def get_HG_by_keyword(keyword):
 
 @app.route("/search/<string:locType>/<string:poiUUID>/")
 @app.route("/search/<string:locType>/<string:poiUUID>/<string:locCategory>")
+# @cache.cached(timeout=43200)
 def searchSpecificEvent(locType, poiUUID, locCategory = None):
-    if locType == "TA":
-        #call STB API for data
-        url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
-        event_result = invoke_http(url)
-        try:
-            code = event_result['status']['code']
-        except:
-            code = event_result["code"]
 
-        if code in range(200,300):
-            #data clean up and return only useful info
-            data = event_result["data"][0]
-            
-            result = {
-                "name": data["name"],
-                "poiUUID": poiUUID,
-                "description": data["body"],
-                "reviews": data["reviews"],
-                "rating": data["rating"],
-                "latitude": data["location"]["latitude"],
-                "longitude": data["location"]["longitude"],
-                "postalCode": data["address"]["postalCode"],
-                "locCategory": data["type"]
-            }
+    rv = cache.get(poiUUID)
+    
+    if rv == None:
 
-            if(len(data["images"]) != 0 or data["images"][0]["uuid"] != ""):
-                result["imageUrl"] = data["images"][0]["uuid"]
-            else:
-                result["imageUrl"] = ""
+        if locType == "TA":
+            #call STB API for data
+            try:
+                locCategory = CATEGORY[locCategory]
+            except:
+                pass
+            url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
+            event_result = invoke_http(url)
+            try:
+                code = event_result['status']['code']
+            except:
+                code = event_result["code"]
 
-            try: 
-                if len(data['businessHour']) != 0:
-                    startTime = datetime.strptime(data["businessHour"][0]["openTime"], "%H:%M").strftime("%I:%M %p")
+            if code in range(200,300):
+                #data clean up and return only useful info
+                data = event_result["data"][0]
+                
+                result = {
+                    "name": data["name"],
+                    "poiUUID": poiUUID,
+                    "description": data["body"],
+                    "reviews": data["reviews"],
+                    "rating": data["rating"],
+                    "latitude": data["location"]["latitude"],
+                    "longitude": data["location"]["longitude"],
+                    "postalCode": data["address"]["postalCode"],
+                    "locCategory": data["type"]
+                }
 
-                    endTime = datetime.strptime(data["businessHour"][0]["closeTime"], "%H:%M").strftime("%I:%M %p")
-
-                    result["startTime"] = startTime
-                    result["endTime"] = endTime
+                if(len(data["images"]) != 0 or data["images"][0]["uuid"] != ""):
+                    result["imageUrl"] = data["images"][0]["uuid"]
                 else:
+                    result["imageUrl"] = ""
+
+                try: 
+                    if len(data['businessHour']) != 0:
+                        startTime = datetime.strptime(data["businessHour"][0]["openTime"], "%H:%M").strftime("%I:%M %p")
+
+                        endTime = datetime.strptime(data["businessHour"][0]["closeTime"], "%H:%M").strftime("%I:%M %p")
+
+                        result["startTime"] = startTime
+                        result["endTime"] = endTime
+                    else:
+                        result["startTime"] = "??"
+                        result["endTime"] = "??"
+                except:
                     result["startTime"] = "??"
                     result["endTime"] = "??"
-            except:
-                result["startTime"] = "??"
-                result["endTime"] = "??"
-            
-            if data["officialEmail"] == "":
-                result["businessEmail"] = "-"
-            else:
-                result["businessEmail"] = data["officialEmail"]
+                
+                if data["officialEmail"] == "":
+                    result["businessEmail"] = "-"
+                else:
+                    result["businessEmail"] = data["officialEmail"]
 
-            if data["officialWebsite"] == "":
-                result["businessWeb"] = "-"
-            else:
-                result["businessWeb"] = data["officialWebsite"]
-            
-            if data["contact"]["primaryContactNo"] == "":
-                result['businessContact'] = "-"
-            else:
-                result["businessContact"] = data["contact"]["primaryContactNo"]
-            
-            result = jsonify({
-                "code": code,
-                "data": result
-            })
-        else:
-            #if error
-            try:
-                result = event_result["status"]
-            except:
+                if data["officialWebsite"] == "":
+                    result["businessWeb"] = "-"
+                else:
+                    result["businessWeb"] = data["officialWebsite"]
+                
+                if data["contact"]["primaryContactNo"] == "":
+                    result['businessContact'] = "-"
+                else:
+                    result["businessContact"] = data["contact"]["primaryContactNo"]
+                
                 result = jsonify({
-                    "code": "500",
-                    "data": event_result["message"]
+                    "code": code,
+                    "data": result
                 })
-    elif locType == "HG":
-        #call Hidden Gem Service
-        url = hg_URL + "/one/"+poiUUID
-        result = invoke_http(url)
-        code = result["code"]
-    else:
-        result = jsonify({
-            "code": 404,
-            "locType": locType,
-            "data": "Undefined locType."
-        })
-        code = 404
+            else:
+                #if error
+                try:
+                    result = event_result["status"]
+                except:
+                    result = jsonify({
+                        "code": "500",
+                        "data": event_result["message"]
+                    })
+        elif locType == "HG":
+            #call Hidden Gem Service
+            url = hg_URL + "/one/"+poiUUID
+            result = invoke_http(url)
+            code = result["code"]
+        else:
+            result = jsonify({
+                "code": 404,
+                "locType": locType,
+                "data": "Undefined locType."
+            })
+            code = 404
 
-    return result, code
+        cache.set(poiUUID, (result,code), timeout = 43200)
+        return result, code
+    
+    return rv
 
 @app.route("/poi/create", methods= ["POST"])
 def create_hidden_gem():

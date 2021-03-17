@@ -35,7 +35,7 @@
 
 		<title id="siteTitle"></title>
 	</head>
-	<body onload="call_uuid_api(new URL(window.location.href).searchParams.get('uuid'), new URL(window.location.href).searchParams.get('type'))">
+	<body onload="call_uuid_api(new URL(window.location.href).searchParams.get('uuid'), new URL(window.location.href).searchParams.get('category'), new URL(window.location.href).searchParams.get('locType'))">
 		<div id="page-container">
 			<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom shadow-sm">
 				<a class="navbar-brand mb-0 h1" href="../home/homepage.html">
@@ -71,7 +71,7 @@
 								<button
 									class="btn btn-outline-secondary border-left-0 border"
 									type="button"
-									onclick="redirect_to_poi(document.getElementById('searching_poi').value)"
+									onclick="redirect_to_search_page(document.getElementById('searching_poi').value)"
 								>
 									<i class="fa fa-search"></i>
 								</button>
@@ -200,6 +200,6 @@
 		></script>
 
 		<!-- Custom CSS -->
-		<script src="search.js"></script>
+		<script src="search_esd.js"></script>
 	</body>
 </html>
