@@ -4,6 +4,7 @@ from flask_caching import Cache
 from multiprocessing import Pool
 import os, sys
 import requests
+from os import environ
 from invokes import invoke_http
 from datetime import datetime
 from itertools import repeat
@@ -18,29 +19,16 @@ config = {
     "DEBUG": True,
     "CACHE_TYPE": "RedisCache",
     "CACHE_DEFAULT_TIMEOUT": 300,
-    "CACHE_REDIS_URL": "redis://localhost:6379/0"
+    "CACHE_REDIS_URL": environ.get("redisURL") or "redis://localhost:6379/0"
 }
 
 app.config.from_mapping(config)
 cache = Cache(app)
 CORS(app)
 
-itinerary_URL = "http://localhost:5000/"
-recommendation_URL = "http://localhost:5002/recommend/"
-poiManager_URL = "http://localhost:5100/search/"
-STB_API_key = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx"
-DATASET = "accommodation,attractions,event,food_beverages,shops,venue,walking_trail"
-stb_base_URL = "https://tih-api.stb.gov.sg/content/v1/"
-CATEGORY = {
-    "Attractions": "attractions",
-    "Malls & Shops": "shops",
-    "Venues": "venue",
-    "Food & Beverages": "food-beverages",
-    "Accommodation": "accommodation",
-    "All": "all",
-    "Walking Trail": "walking_trail",
-    "Events": "event"
-}
+itinerary_URL = environ.get("itineraryURL") or "http://localhost:5000/"
+recommendation_URL = environ.get("recommendationURL") or "http://localhost:5002/recommend/"
+poiManager_URL = environ.get("poiManagerURL") or "http://localhost:5100/search/"
 
 #Handle itinerary endpoints
 #create new itinerary

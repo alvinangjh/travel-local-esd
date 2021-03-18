@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_caching import Cache
 import os, sys
 import requests
+from os import environ
 from invokes import invoke_http
 from datetime import datetime
 sys.path.append("../")
@@ -13,14 +14,14 @@ config = {
     "DEBUG": True,
     "CACHE_TYPE": "RedisCache",
     "CACHE_DEFAULT_TIMEOUT": 300,
-    "CACHE_REDIS_URL": "redis://localhost:6379/0"
+    "CACHE_REDIS_URL": environ.get("redisURL") or "redis://localhost:6379/0"
 }
 app = Flask(__name__)
 cache = Cache(app, config = config)
 CORS(app)
 
-itinerary_URL = "http://localhost:5000/"
-hg_URL = "http://localhost:5001/hiddengem"
+itinerary_URL = environ.get("itineraryURL") or "http://localhost:5000/"
+hg_URL = environ.get("hgURL") or "http://localhost:5001/hiddengem"
 STB_API_key = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx"
 DATASET = "accommodation,attractions,food_beverages,shops,venue,walking_trail"
 stb_base_URL = "https://tih-api.stb.gov.sg/content/v1/"
