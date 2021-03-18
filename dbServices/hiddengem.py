@@ -8,6 +8,10 @@ app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local_hiddengem' #RMB TO UPDATE THIS
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/travel_local_hiddengem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_pre_ping": True, 
+        "pool_recycle": 300,
+    }
 
 db = SQLAlchemy(app)
 
@@ -68,7 +72,7 @@ def create_hg():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred adding the Hidden Gem."
+                "data": "An error occurred adding the Hidden Gem."
             }
         ), 500
 
@@ -94,7 +98,7 @@ def get_all_hg(keyword = ""):
     return jsonify(
         {
             "code": 404,
-            "message": "No hidden gems found."
+            "data": "No hidden gems found."
         }
     ), 404
 
@@ -111,9 +115,9 @@ def get_specific_hg(poiUUID):
     return jsonify(
         {
             "code": 404,
-            "message": "Hidden Gem not found."
+            "data": "Hidden Gem not found."
         }
     ), 404
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True) #rmb to update this
+    app.run(host="0.0.0.0", port=5001, debug=True) #rmb to update this

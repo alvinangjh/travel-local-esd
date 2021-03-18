@@ -14,7 +14,10 @@ app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local_log' #RMB TO UPDATE THIS
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/travel_local_log'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_pre_ping": True, 
+        "pool_recycle": 300,
+    }
 db = SQLAlchemy(app)
 
 CORS(app)  

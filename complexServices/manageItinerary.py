@@ -36,11 +36,16 @@ poiManager_URL = environ.get("poiManagerURL") or "http://localhost:5100/search/"
 def create_itinerary():
     try:
         userID = request.args.get("userID")
+        if userID == None:
+            return jsonify({
+                "code": 400,
+                "data": "UserID not found"
+            }), 400
     except:
         return jsonify({
             "code": 400,
             "data": "UserID not found"
-        })
+        }), 400
     if request.is_json:
         try:
             itinerary = request.get_json()
@@ -87,11 +92,16 @@ def create_itinerary():
 def add_event():
     try:
         userID = request.args.get("userID")
+        if userID == None:
+            return jsonify({
+                "code": 400,
+                "data": "UserID not found"
+            }), 400
     except:
         return jsonify({
             "code": 400,
             "data": "UserID not found"
-        })
+        }), 400
     if request.is_json:
         try:
             itinerary = request.get_json()
@@ -122,11 +132,16 @@ def add_event():
 def getAllEventsInItinerary(itineraryID):
     try:
         userID = request.args.get("userID")
+        if userID == None:
+            return jsonify({
+                "code": 400,
+                "data": "UserID not found"
+            }), 400
     except:
         return jsonify({
             "code": 400,
             "data": "UserID not found"
-        })
+        }), 400
     rv = cache.get(str(itineraryID))
 
     if rv != None:

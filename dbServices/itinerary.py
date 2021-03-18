@@ -9,7 +9,10 @@ app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/travel_local_itinerary' #RMB TO UPDATE THIS
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/travel_local_itinerary'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_pre_ping": True, 
+        "pool_recycle": 300,
+    }
 db = SQLAlchemy(app)
 
 config = {
@@ -305,4 +308,4 @@ def delete_activity(eventID):
     ), 404
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True) #rmb to update this
+    app.run(host="0.0.0.0", port=5000, debug=True) #rmb to update this

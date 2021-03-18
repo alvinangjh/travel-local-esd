@@ -43,11 +43,16 @@ CATEGORY = {
 def searchEventsByKeyword(keyword = ""):
     try:
         userID = request.args.get("userID")
+        if userID == None:
+            return jsonify({
+                "code": 400,
+                "data": "UserID not found"
+            }), 400
     except:
         return jsonify({
             "code": 400,
             "data": "UserID not found"
-        })
+        }), 400
     #call function to get info from Hidden Gem
     hgFound, hgData = get_HG_by_keyword(keyword)
 
@@ -136,17 +141,23 @@ def get_HG_by_keyword(keyword):
         #handle error here
         return False, event_result["message"]
 
-@app.route("/search/<string:locType>/<string:poiUUID>/")
+@app.route("/search/<string:locType>/<string:poiUUID>", strict_slashes=False)
+@app.route("/search/<string:locType>/<string:poiUUID>/", strict_slashes = False)
 @app.route("/search/<string:locType>/<string:poiUUID>/<string:locCategory>")
 # @cache.cached(timeout=43200)
 def searchSpecificEvent(locType, poiUUID, locCategory = None):
     try:
         userID = request.args.get("userID")
+        if userID == None:
+            return jsonify({
+                "code": 400,
+                "data": "UserID not found"
+            }), 400
     except:
         return jsonify({
             "code": 400,
             "data": "UserID not found"
-        })
+        }),400
     rv = cache.get(poiUUID)
     if rv == None:
         if locType == "TA":
@@ -156,6 +167,7 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
             except:
                 pass
             url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
+            print(url)
             event_result = invoke_http(url)
             try:
                 code = event_result['status']['code']
@@ -254,11 +266,16 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
 def create_hidden_gem():
     try:
         userID = request.args.get("userID")
+        if userID == None:
+            return jsonify({
+                "code": 400,
+                "data": "UserID not found"
+            }), 400
     except:
         return jsonify({
             "code": 400,
             "data": "UserID not found"
-        })
+        }), 400
     if request.is_json:
         try:
             hidden_gem = request.get_json()
