@@ -2,7 +2,7 @@
 
 import json
 import os, sys
-sys.path.append("../../")
+sys.path.append("../")
 import amqp_setup
 
 from flask import Flask, request, jsonify
