@@ -39,7 +39,7 @@ function call_poi_manager(keyword, categories){
 		keyword = ''
 	}
 
-    var url = base_url + '/' + keyword
+    var url = base_url + '/' + keyword + "?userID=" + sessionStorage.getItem("userID")
 
     request.open("GET", url, true);
 
@@ -98,10 +98,10 @@ function alvin_search() {
 	checkUser();
 
 	if(new URL(window.location.href).searchParams.get("keyword") == null){
-		window.location.href = "search.html?keyword="
+		window.location.href = "search.html?keyword=" + "&userID=" + sessionStorage.getItem("userID")
 	}
 	document.getElementById("searching_poi").value = new URL(window.location.href).searchParams.get("keyword");
-	var keyword = new URL(window.location.href).searchParams.get("keyword");
+	var keyword = new URL(window.location.href).searchParams.get("keyword") + + "&userID=" + sessionStorage.getItem("userID");
 	document.getElementById("insert_search_title").innerHTML = keyword;
 	call_poi_manager(keyword, "all");
 }
@@ -200,7 +200,8 @@ function new_search() {
             window.location.host +
             window.location.pathname +
             "?keyword=" +
-            document.getElementById("searching_poi").value;
+            document.getElementById("searching_poi").value
+			+ "&userID=" + sessionStorage.getItem("userID");
         window.history.pushState({ path: newUrl }, "", newUrl);
     }
 
@@ -258,7 +259,7 @@ function call_uuid_api(uuid, category, locType) {
 	};
 
 	var base_url = "http://localhost:5100/search/";
-	var final_url = base_url + locType + '/' + uuid + '/' + category
+	var final_url = base_url + locType + '/' + uuid + '/' + category + "?userID=" + sessionStorage.getItem("userID")
     console.log(final_url)
 	request.open("GET", final_url, true);
 
@@ -493,7 +494,7 @@ function redirect_to_search_page(keyword) {
 }
 
 function startPlanning() {
-	var url = "http://localhost:5000/itinerary/all/" + sessionStorage.getItem("userID");
+	var url = "http://localhost:5000/itinerary/all/" + sessionStorage.getItem("userID") + "?userID=" + sessionStorage.getItem("userID");
 
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function () {
@@ -572,7 +573,7 @@ function addActivity() {
 
 	var checkValid = moment(startTime, "HH:mm").isBefore(moment(endTime, "HH:mm"));
 
-	var url = "http://localhost:5200/itr/addEvent";
+	var url = "http://localhost:5200/itr/addEvent" + "?userID=" + sessionStorage.getItem("userID");
 
 	if (checkValid == true) {
 		document.getElementById("conflictAlert").style.display = "none";
