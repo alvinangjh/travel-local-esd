@@ -1,59 +1,82 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+from flask_caching import Cache
 import os, sys
-
 import requests
 from invokes import invoke_http
 from datetime import datetime
-
-# import amqp_setup
+sys.path.append("../")
+import amqp_setup
 import pika
 import json
-
+config = {
+    "DEBUG": True,
+    "CACHE_TYPE": "RedisCache",
+    "CACHE_DEFAULT_TIMEOUT": 300,
+    "CACHE_REDIS_URL": "redis://localhost:6379/0"
+}
 app = Flask(__name__)
+cache = Cache(app, config = config)
 CORS(app)
 
 itinerary_URL = "http://localhost:5000/"
 hg_URL = "http://localhost:5001/hiddengem"
 STB_API_key = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx"
-DATASET = "accommodation,attractions,event,food_beverages,shops,venue,walking_trail"
+DATASET = "accommodation,attractions,food_beverages,shops,venue,walking_trail"
 stb_base_URL = "https://tih-api.stb.gov.sg/content/v1/"
 CATEGORY = {
     "Attractions": "attractions",
     "Malls & Shops": "shops",
     "Venues": "venue",
-    "Food & Beverages": "food-beverages",
+    "Food & Beverages": "food_beverages",
     "Accommodation": "accommodation",
     "All": "all",
     "Walking Trail": "walking_trail",
-    "Events": "event"
+    "Events": "event",
+    "food_beverages": "food-beverages",
+    "walking_trail": "walking-trail"
 }
 
 @app.route("/search/<string:keyword>")
-def searchEventsByKeyword(keyword):
+@app.route("/search//")
+def searchEventsByKeyword(keyword = ""):
+    try:
+        userID = request.args.get("userID")
+    except:
+        return jsonify({
+            "code": 400,
+            "data": "UserID not found"
+        })
     #call function to get info from Hidden Gem
     hgFound, hgData = get_HG_by_keyword(keyword)
 
     #call function to get info from STB API
     stbFound, stbData = get_STB_by_keyword(keyword)
-
-    if not hgFound and not stbFound:        
-        return jsonify({
-            "code": 404,
+    succ = "success"
+    if not hgFound and not stbFound:
+        result = {
+            "code":404,
             "hgData": hgData,
             "stbData": stbData
-        }), 404
+        }
+        code = 404 
+        succ = "error"
 
-    return jsonify({
-        "code": 200,
+    result = {
+        "code":200,
         "hgData": hgData,
         "stbData": stbData
-    })
+    }
+    code = 200
+
+    logging(userID, "searchKeyword", result, succ)
+    return jsonify(result), code
 
 def get_STB_by_keyword(keyword):
-
-    url = stb_base_URL+"/search/all?dataset="+DATASET+"&apikey="+STB_API_key+"&keyword="+keyword
+    
+    url = stb_base_URL+"/search/all?dataset="+DATASET+"&apikey="+STB_API_key
+    if keyword != "":
+        url+= "&keyword="+keyword
 
     event_result = invoke_http(url)
     code = event_result["status"]["code"]
@@ -114,112 +137,161 @@ def get_HG_by_keyword(keyword):
 
 @app.route("/search/<string:locType>/<string:poiUUID>/")
 @app.route("/search/<string:locType>/<string:poiUUID>/<string:locCategory>")
+# @cache.cached(timeout=43200)
 def searchSpecificEvent(locType, poiUUID, locCategory = None):
-    if locType == "TA":
-        #call STB API for data
-        url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
-        event_result = invoke_http(url)
-        try:
-            code = event_result['status']['code']
-        except:
-            code = event_result["code"]
-
-        if code in range(200,300):
-            #data clean up and return only useful info
-            data = event_result["data"][0]
-            
-            result = {
-                "name": data["name"],
-                "poiUUID": poiUUID,
-                "description": data["body"],
-                "reviews": data["reviews"],
-                "rating": data["rating"],
-                "latitude": data["location"]["latitude"],
-                "longitude": data["location"]["longitude"],
-                "postalCode": data["address"]["postalCode"],
-                "locCategory": data["type"]
-            }
-
-            if(len(data["images"]) != 0 or data["images"][0]["uuid"] != ""):
-                result["imageUrl"] = data["images"][0]["uuid"]
-            else:
-                result["imageUrl"] = ""
-
-            try: 
-                if len(data['businessHour']) != 0:
-                    startTime = datetime.strptime(data["businessHour"][0]["openTime"], "%H:%M").strftime("%I:%M %p")
-
-                    endTime = datetime.strptime(data["businessHour"][0]["closeTime"], "%H:%M").strftime("%I:%M %p")
-
-                    result["startTime"] = startTime
-                    result["endTime"] = endTime
-                else:
-                    result["startTime"] = "??"
-                    result["endTime"] = "??"
-            except:
-                result["startTime"] = "??"
-                result["endTime"] = "??"
-            
-            if data["officialEmail"] == "":
-                result["businessEmail"] = "-"
-            else:
-                result["businessEmail"] = data["officialEmail"]
-
-            if data["officialWebsite"] == "":
-                result["businessWeb"] = "-"
-            else:
-                result["businessWeb"] = data["officialWebsite"]
-            
-            if data["contact"]["primaryContactNo"] == "":
-                result['businessContact'] = "-"
-            else:
-                result["businessContact"] = data["contact"]["primaryContactNo"]
-            
-            result = jsonify({
-                "code": code,
-                "data": result
-            })
-        else:
-            #if error
-            try:
-                result = event_result["status"]
-            except:
-                result = jsonify({
-                    "code": "500",
-                    "data": event_result["message"]
-                })
-    elif locType == "HG":
-        #call Hidden Gem Service
-        url = hg_URL + "/one/"+poiUUID
-        result = invoke_http(url)
-        code = result["code"]
-    else:
-        result = jsonify({
-            "code": 404,
-            "locType": locType,
-            "data": "Undefined locType."
+    try:
+        userID = request.args.get("userID")
+    except:
+        return jsonify({
+            "code": 400,
+            "data": "UserID not found"
         })
-        code = 404
+    rv = cache.get(poiUUID)
+    if rv == None:
+        if locType == "TA":
+            #call STB API for data
+            try:
+                locCategory = CATEGORY[locCategory]
+            except:
+                pass
+            url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
+            event_result = invoke_http(url)
+            try:
+                code = event_result['status']['code']
+            except:
+                code = event_result["code"]
 
-    return result, code
+            if code in range(200,300):
+                #data clean up and return only useful info
+                data = event_result["data"][0]
+                
+                result = {
+                    "name": data["name"],
+                    "poiUUID": poiUUID,
+                    "description": data["body"],
+                    "reviews": data["reviews"],
+                    "rating": data["rating"],
+                    "latitude": data["location"]["latitude"],
+                    "longitude": data["location"]["longitude"],
+                    "postalCode": data["address"]["postalCode"],
+                    "locCategory": data["type"]
+                }
+
+                if(len(data["images"]) != 0 or data["images"][0]["uuid"] != ""):
+                    result["imageUrl"] = data["images"][0]["uuid"]
+                else:
+                    result["imageUrl"] = ""
+
+                try: 
+                    if len(data['businessHour']) != 0:
+                        openTime = datetime.strptime(data["businessHour"][0]["openTime"], "%H:%M").strftime("%I:%M %p")
+
+                        closeTime = datetime.strptime(data["businessHour"][0]["closeTime"], "%H:%M").strftime("%I:%M %p")
+
+                        result["openTime"] = openTime
+                        result["closeTime"] = closeTime
+                    else:
+                        result["openTime"] = "??"
+                        result["closeTime"] = "??"
+                except:
+                    result["openTime"] = "??"
+                    result["closeTime"] = "??"
+                
+                if data["officialEmail"] == "":
+                    result["businessEmail"] = "-"
+                else:
+                    result["businessEmail"] = data["officialEmail"]
+
+                if data["officialWebsite"] == "":
+                    result["businessWeb"] = "-"
+                else:
+                    result["businessWeb"] = data["officialWebsite"]
+                
+                if data["contact"]["primaryContactNo"] == "":
+                    result['businessContact'] = "-"
+                else:
+                    result["businessContact"] = data["contact"]["primaryContactNo"]
+                
+                result = jsonify({
+                    "code": code,
+                    "data": result
+                })
+            else:
+                #if error
+                try:
+                    result = event_result["status"]
+                except:
+                    result = jsonify({
+                        "code": "500",
+                        "data": event_result["message"]
+                    })
+        elif locType == "HG":
+            #call Hidden Gem Service
+            url = hg_URL + "/one/"+poiUUID
+            result = invoke_http(url)
+            code = result["code"]
+        else:
+            result = jsonify({
+                "code": 404,
+                "locType": locType,
+                "data": "Undefined locType."
+            })
+            code = 404
+
+        cache.set(poiUUID, (result,code), timeout = 43200)
+        logging(userID,"searchUUID", result, "success" if code in range (200,300) else "error")
+        return result, code
+    
+    try:
+        # print(rv[0]["data"])
+        logging(userID, "searchUUID", rv[0]["data"], "success")
+    except:
+        logging(userID, "searchUUID", rv[0].get_json()["data"], "success")
+    return rv
 
 @app.route("/poi/create", methods= ["POST"])
 def create_hidden_gem():
+    try:
+        userID = request.args.get("userID")
+    except:
+        return jsonify({
+            "code": 400,
+            "data": "UserID not found"
+        })
     if request.is_json:
         try:
             hidden_gem = request.get_json()
-            # print("\nReceived an hidden_gem in JSON:", hidden_gem)
+            
             creation_result = invoke_http(hg_URL,method='POST', json = hidden_gem)
-            # print('creation_result:', creation_result)
+            
+            logging(userID, "createHG", creation_result["data"], "success" if creation_result["code"] in range (200,300) else "error")
             return jsonify(creation_result), creation_result["code"]
         except Exception as e:
             pass  # do nothing.
-
-    # if reached here, not a JSON request.
-    return jsonify({
+    
+    result = {
         "code": 400,
         "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
+    }
+    logging(userID, "createHG", result, "error")
+    # if reached here, not a JSON request.
+    return jsonify({result}), 400
+
+
+def logging(userID, action, logDetails, succ):
+    try:
+        message = {
+            "userID": userID,
+            "action": action,
+            "logDetails": json.dumps(logDetails)
+        }
+    except:
+        message = {
+            "userID": userID,
+            "action": action,
+            "logDetails": json.dumps(logDetails.get_json()["data"])
+        }
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=succ+".log", body=json.dumps(message))
 
 
 # Execute this program if it is run as a main script (not by 'import')
