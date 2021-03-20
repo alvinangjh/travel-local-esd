@@ -1,0 +1,265 @@
+version: "3.8"
+
+volumes:
+  rabbitmq_data:
+  redis_data:
+
+networks:
+  travel-local:
+    driver: bridge
+
+services:
+  ###################################
+  # Itinerary: The Itinerary microservice
+  ###################################
+  itinerary:
+    build:
+      context: ./dbServices/
+      dockerfile: itinerary.Dockerfile
+    image: lyihaoo/itinerary:travel-local
+    restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5000 itinerary:app
+    environment:
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/travel_local_itinerary
+      redisURL: redis://redis:6379/0
+      PYTHONUNBUFFERED: 1
+    deploy:
+      replicas: 1 #change this number for how many replicated container to deploy
+    ports:
+      - "5000"
+    depends_on:
+      - kong
+      - redis
+    networks:
+      - travel-local
+ 
+  #######################################################
+  # Hiddengem: The Hiddengem microservice
+  #######################################################
+  hiddengem:
+    build:
+      context: ./dbServices/
+      dockerfile: hiddengem.Dockerfile
+    image: lyihaoo/hiddengem:travel-local
+    restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5001 hiddengem:app
+    environment:
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/travel_local_hiddengem
+      PYTHONUNBUFFERED: 1
+    deploy:
+      replicas: 1 #change this number for how many replicated container to deploy
+    ports:
+      - "5001"
+    depends_on:
+      - kong
+    networks:
+      - travel-local
+  
+  #######################################################
+  # Recommendation: The Recommendation microservice
+  #######################################################
+  recommendation:
+    build:
+      context: ./dbServices/
+      dockerfile: recommendation.Dockerfile
+    image: lyihaoo/recommendation:travel-local
+    restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5002 recommendation:app
+    environment:
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/travel_local_recommendation
+      PYTHONUNBUFFERED: 1
+    deploy:
+      replicas: 1 #change this number for how many replicated container to deploy
+    ports:
+      - "5002"
+    depends_on:
+      - kong
+    networks:
+      - travel-local
+  
+  #######################################################
+  # Log: The Log microservice
+  #######################################################
+  log:
+    build:
+      context: ./dbServices/
+      dockerfile: log.Dockerfile
+    image: lyihaoo/log:travel-local
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/travel_local_log
+      rabbitHost: rabbitmq
+      rabbitPort: 5672
+      PYTHONUNBUFFERED: 1
+    deploy:
+      replicas: 3 #change this number for how many replicated container to deploy
+    depends_on:
+      - kong
+      - rabbitmq
+    networks:
+      - travel-local
+  
+  #######################################################
+  # Manage POI: The Manage POI microservice
+  #######################################################
+  managePOI:
+    build:
+      context: ./complexServices/
+      dockerfile: managePOI.Dockerfile
+    image: lyihaoo/managepoi:travel-local
+    restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5100 managePOI:app
+    environment:
+      rabbitHost: rabbitmq
+      rabbitPort: 5672
+      redisURL: redis://redis:6379/0
+      itineraryURL: http://itinerary:5000/
+      hgURL: http://hiddengem:5001/hiddengem
+      PYTHONUNBUFFERED: 1
+    deploy:
+      replicas: 1 #change this number for how many replicated container to deploy
+    ports:
+      - "5100"
+    depends_on:
+      - kong
+      - rabbitmq
+      - redis
+    networks:
+      - travel-local
+  
+  #######################################################
+  # Manage POI: The Manage POI microservice
+  #######################################################
+  manageItinerary:
+    build:
+      context: ./complexServices/
+      dockerfile: manageItinerary.Dockerfile
+    image: lyihaoo/manageitinerary:travel-local
+    restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5200 manageItinerary:app
+    environment:
+      rabbitHost: rabbitmq
+      rabbitPort: 5672
+      redisURL: redis://redis:6379/0
+      itineraryURL: http://itinerary:5000/
+      recommendationURL: http://recommendation:5002/recommend/
+      poiManagerURL: http://managePOI:5100/search/
+      PYTHONUNBUFFERED: 1
+    deploy:
+      replicas: 1 #change this number for how many replicated container to deploy
+    ports:
+      - "5200"
+    depends_on:
+      - kong
+      - rabbitmq
+      - redis
+    networks:
+      - travel-local
+  
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: travel-local-rabbit
+    restart: always
+    ports:
+      - "5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - travel-local
+  ####################################
+  # Redis: The cache database   
+  ####################################
+  redis:
+    image: redis
+    hostname: travel-local-redis
+    restart: always
+    ports:
+      - "6379"
+    volumes: 
+      - redis_data:/var/lib/redis
+    networks:
+      - travel-local
+  
+  #######################################
+  # Postgres: The database used by Kong
+  #######################################
+  kong-database:
+    image: postgres:9.6
+    restart: always
+    networks:
+      - travel-local
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    
+  #######################################
+  # Kong database migration
+  #######################################
+  kong-migration:
+    image: kong
+    command: "kong migrations bootstrap"
+    restart: on-failure
+    networks:
+      - travel-local
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: password
+    depends_on:
+      - kong-database
+  
+  #######################################
+  # Kong: The API Gateway
+  #######################################
+  kong:
+    image: kong
+    restart: always
+    networks:
+      - travel-local
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: password
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    depends_on:
+      - kong-migration
+    ports:
+      - "8000:8000"
+  
+  #######################################
+  # Konga: Kong GUI
+  #######################################
+  konga:
+    image: pantsel/konga
+    restart: always
+    networks:
+        - travel-local
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: kong-database
+      DB_USER: kong
+      DB_PASSWORD: password
+      DB_DATABASE: konga_db
+    depends_on:
+      - kong
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./kongadata:/app/kongadata
