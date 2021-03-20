@@ -168,8 +168,8 @@ def getAllEventsInItinerary(itineraryID):
         result = []
         
         with Pool() as p:
-            # result.append(p.map(call_poiManager, dataList))
-            result.append(p.starmap(call_poiManager, zip(dataList, repeat(userID))))
+            result.append(p.map(call_poiManager, dataList))
+            # result.append(p.starmap(call_poiManager, zip(dataList, repeat(userID))))
 
 
         rv = {
@@ -192,9 +192,9 @@ def get_specific_itinerary(itineraryID):
     result = invoke_http(final_itinerary_URL)
     return result
 
-def call_poiManager(data, userID):
+def call_poiManager(data):
     temp = data
-    url = poiManager_URL + data["locType"] +"/"+data["poiUUID"] +"/" + data["locCategory"] +"?userID="+ str(userID)
+    url = poiManager_URL + data["locType"] +"/"+data["poiUUID"] +"/" + data["locCategory"] +"?userID=0"
     event_details = invoke_http(url)
     temp["POIDetails"] = event_details['data']
     

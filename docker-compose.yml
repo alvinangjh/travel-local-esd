@@ -2,8 +2,6 @@ version: "3.8"
 
 volumes:
   rabbitmq_data:
-  kongadata:
-  pgdata:
   redis_data:
 
 networks:
@@ -20,12 +18,13 @@ services:
       dockerfile: itinerary.Dockerfile
     image: lyihaoo/itinerary:travel-local
     restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5000 itinerary:app
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/travel_local_itinerary
       redisURL: redis://redis:6379/0
       PYTHONUNBUFFERED: 1
     deploy:
-      replicas: 2 #change this number for how many replicated container to deploy
+      replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5000"
     depends_on:
@@ -43,11 +42,12 @@ services:
       dockerfile: hiddengem.Dockerfile
     image: lyihaoo/hiddengem:travel-local
     restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5001 hiddengem:app
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/travel_local_hiddengem
       PYTHONUNBUFFERED: 1
     deploy:
-      replicas: 2 #change this number for how many replicated container to deploy
+      replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5001"
     depends_on:
@@ -64,11 +64,12 @@ services:
       dockerfile: recommendation.Dockerfile
     image: lyihaoo/recommendation:travel-local
     restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5002 recommendation:app
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/travel_local_recommendation
       PYTHONUNBUFFERED: 1
     deploy:
-      replicas: 2 #change this number for how many replicated container to deploy
+      replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5002"
     depends_on:
@@ -91,7 +92,7 @@ services:
       rabbitPort: 5672
       PYTHONUNBUFFERED: 1
     deploy:
-      replicas: 2 #change this number for how many replicated container to deploy
+      replicas: 3 #change this number for how many replicated container to deploy
     depends_on:
       - kong
       - rabbitmq
@@ -107,6 +108,7 @@ services:
       dockerfile: managePOI.Dockerfile
     image: lyihaoo/managepoi:travel-local
     restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5100 managePOI:app
     environment:
       rabbitHost: rabbitmq
       rabbitPort: 5672
@@ -115,7 +117,7 @@ services:
       hgURL: http://hiddengem:5001/hiddengem
       PYTHONUNBUFFERED: 1
     deploy:
-      replicas: 2 #change this number for how many replicated container to deploy
+      replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5100"
     depends_on:
@@ -134,6 +136,7 @@ services:
       dockerfile: manageItinerary.Dockerfile
     image: lyihaoo/manageitinerary:travel-local
     restart: always
+    command: gunicorn -w 4 --bind 0.0.0.0:5200 manageItinerary:app
     environment:
       rabbitHost: rabbitmq
       rabbitPort: 5672
@@ -143,7 +146,7 @@ services:
       poiManagerURL: http://managePOI:5100/search/
       PYTHONUNBUFFERED: 1
     deploy:
-      replicas: 2 #change this number for how many replicated container to deploy
+      replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5200"
     depends_on:
@@ -161,7 +164,7 @@ services:
     hostname: travel-local-rabbit
     restart: always
     ports:
-      - "5672:5672"
+      - "5672"
       - "15672:15672"
     volumes: 
       - rabbitmq_data:/var/lib/rabbitmq
@@ -201,13 +204,13 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
     
   #######################################
   # Kong database migration
   #######################################
   kong-migration:
-    image: kong:2.0.4
+    image: kong
     command: "kong migrations bootstrap"
     restart: on-failure
     networks:
@@ -224,7 +227,7 @@ services:
   # Kong: The API Gateway
   #######################################
   kong:
-    image: kong:2.0.4
+    image: kong
     restart: always
     networks:
       - travel-local
@@ -259,4 +262,4 @@ services:
     ports:
       - "1337:1337"
     volumes:
-      - kongadata:/app/kongadata
+      - ./kongadata:/app/kongadata

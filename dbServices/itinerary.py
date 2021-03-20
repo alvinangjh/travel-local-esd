@@ -89,7 +89,7 @@ def createItinerary():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred creating the itinerary."
+                "data": "An error occurred creating the itinerary."
             }
         ), 500
 
@@ -214,7 +214,7 @@ def addEvent():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred adding the Event."
+                "data": "An error occurred adding the Event."
             }
         ), 500
     cache.delete(str(data["itineraryID"]))
@@ -239,7 +239,7 @@ def get_all_events(itineraryID):
     return jsonify(
         {
             "code": 404,
-            "message": "Events not found."
+            "data": "Events not found."
         }
     ), 404
 

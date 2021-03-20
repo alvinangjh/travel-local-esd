@@ -139,7 +139,7 @@ def get_HG_by_keyword(keyword):
         return True, results
     else:
         #handle error here
-        return False, event_result["message"]
+        return False, event_result["data"]
 
 @app.route("/search/<string:locType>/<string:poiUUID>", strict_slashes=False)
 @app.route("/search/<string:locType>/<string:poiUUID>/", strict_slashes = False)
@@ -167,7 +167,6 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
             except:
                 pass
             url = stb_base_URL+locCategory+"?apikey="+ STB_API_key +"&uuid="+poiUUID
-            print(url)
             event_result = invoke_http(url)
             try:
                 code = event_result['status']['code']
@@ -225,41 +224,49 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
                 else:
                     result["businessContact"] = data["contact"]["primaryContactNo"]
                 
-                result = jsonify({
+                result = {
                     "code": code,
                     "data": result
-                })
+                }
             else:
                 #if error
                 try:
                     result = event_result["status"]
+                    return jsonify(result), code
                 except:
                     result = jsonify({
                         "code": "500",
                         "data": event_result["message"]
                     })
+                    return result, 500
         elif locType == "HG":
             #call Hidden Gem Service
             url = hg_URL + "/one/"+poiUUID
             result = invoke_http(url)
             code = result["code"]
+            if code not in range(200,300):
+                return jsonify(result), code
         else:
-            result = jsonify({
+            result = {
                 "code": 404,
                 "locType": locType,
                 "data": "Undefined locType."
-            })
+            }
             code = 404
 
-        cache.set(poiUUID, (result,code), timeout = 43200)
-        logging(userID,"searchUUID", result, "success" if code in range (200,300) else "error")
+        cache.set(poiUUID, (jsonify(result),code), timeout = 43200)
+        if userID != '0':
+            logging(userID,"searchUUID", result, "success" if code in range (200,300) else "error")
         return result, code
     
-    try:
-        # print(rv[0]["data"])
-        logging(userID, "searchUUID", rv[0]["data"], "success")
-    except:
-        logging(userID, "searchUUID", rv[0].get_json()["data"], "success")
+    if userID != '0':
+        try:
+            # print(rv[0]["data"])
+            logging(userID, "searchUUID", rv[0]["data"], "success")
+        except:
+            # print(rv)
+            # print(rv[0])
+            logging(userID, "searchUUID", rv[0].get_json()["data"], "success")
     return rv
 
 @app.route("/poi/create", methods= ["POST"])
@@ -289,7 +296,7 @@ def create_hidden_gem():
     
     result = {
         "code": 400,
-        "message": "Invalid JSON input: " + str(request.get_data())
+        "data": "Invalid JSON input: " + str(request.get_data())
     }
     logging(userID, "createHG", result, "error")
     # if reached here, not a JSON request.
