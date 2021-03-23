@@ -1,8 +1,8 @@
 const apiKey = "2DeahNNW3hdNmHNNpsUFv0BH7mQeZm63"; //Hong Tao's API Auth Token
 
-var url = "../../php/objects/userItinRetrieve.php"; //Always set url for api call
+// var url = "../../php/objects/userItinRetrieve.php"; //Always set url for api call
 var get_userID = sessionStorage.getItem("userID"); //Get's the current user's ID (userID)
-var url = "http://localhost:5000/itinerary/all/"+ get_userID;
+var url = "http://localhost:8000/api/itinerary/itinerary/all/"+ get_userID;
 
 $.ajax({ //displaying user itin cards
     url: url,
@@ -47,7 +47,7 @@ $.ajax({ //displaying user itin cards
 // url = "../../php/objects/retrievePopItins.php";
 // ajaxCall(url, display_popular_cards); //Call api to php & MySQL to generate popular itinerary cards
 
-url = "../../php/objects/userItinRecommendedDefault.php";
+// url = "../../php/objects/userItinRecommendedDefault.php";
 // ajaxCall(url, display_recommended_cards, "POST", { userID: get_userID }); //Call api to php & MySQL to generate recommended itinerary cards based on userID
 
 //Used to redirect to search if they used searchbar
@@ -162,50 +162,56 @@ function open_Modal(itin) {
 	$("#exampleModalCenter").modal("show");
 }
 
-function open_reco_Modal(itin) {
-	document.getElementById("accept").id = itin;
+function open_reco_Modal(response) {
+    console.log(response);
+	// document.getElementById("accept").id = itin;
+    // console.log(itin);
     // recommended_events
     var theme = $("#itinType").val();
     // console.log(theme);
-    var url = "http://localhost:5002/recommend/"+theme;
-
-    $.ajax({ // populate recommendation cards in modal
-        url: url,
-        success: function(response) {
-            // console.log(response.data);
-            var reco_view = document.getElementById("recommended_events");
-            reco_view.innerHTML = "";
-            for (var i = 0; i < response.data.length; i++){
-                var new_card = document.createElement("div");
-                var poiURL = `http://localhost/travel-local-esd/pages/search/specific_poi_design.html?uuid=${response.data[i].poiUUID}&type=${response.data[i].locCategory}&locType=${response.data[i].locType}`;
-                // console.log(poiURL);
-                new_card.className = "col-4";
-                new_card.innerHTML = `
-                    <div class="card mx-auto mb-4" style="width: 14rem;">
-                        <img alt="Card image cap" id="reco+${response.data[i].name}" class="card-img-top img-fluid" src="../../dbServices/recommendation/image/${response.data[i].imageURL}">
-                        <button onClick="window.location.href='${poiURL}'" class="link_overlay">
-                            <div class="card-img-overlay">
-                                <h5 class="card-title">${response.data[i].name}</h5>
-                                <footer class="blockquote-footer">Rating: ${response.data[i].rating}</p>
-                            </div>
-                        </button>
+    // console.log(response.data);
+    var reco_view = document.getElementById("recommended_events");
+    reco_view.innerHTML = "";
+    for (var i = 0; i < response.length; i++){
+        var new_card = document.createElement("div");
+        var poiURL = `http://localhost/travel-local-esd/pages/search/specific_poi_design.html?uuid=${response[i].poiUUID}&type=${response[i].locCategory}&locType=${response[i].locType}`;
+        // console.log(poiURL);
+        new_card.className = "col-4";
+        new_card.innerHTML = `
+            <div class="card mx-auto mb-4" style="width: 14rem;">
+                <img alt="Card image cap" id="reco+${response[i].name}" class="card-img-top img-fluid" src="../../dbServices/recommendation/image/${response[i].imageURL}">
+                <button onClick="window.location.href='${poiURL}'" class="link_overlay">
+                    <div class="card-img-overlay">
+                        <h5 class="card-title">${response[i].name}</h5>
+                        <footer class="blockquote-footer">Rating: ${response[i].rating}</p>
                     </div>
-                `;
-                reco_view.appendChild(new_card);
-            }
-            }
-        });
+                </button>
+            </div>
+        `;
+        reco_view.appendChild(new_card);
+    }
+
 
 	$("#creation_recommendation").modal("show");
 }
 
 //delete itinerary ref (itineraryID)
 function delete_itin(id) {
-	var itineraryID = { itineraryID: id };
-	itineraryID = JSON.stringify(itineraryID);
-	let url = "../../php/objects/itinDelete.php";
-	ajaxCall(url, console.log, "POST", itineraryID);
-	location.reload();
+    console.log(id);
+	// var itineraryID = { itineraryID: id };
+	// itineraryID = JSON.stringify(itineraryID);
+	// let url = "../../php/objects/itinDelete.php";
+    let url = "http://localhost:8000/api/itinerary/itinerary/delete/"+id;
+    $.ajax({ // create a new itinerary
+        url: url,
+        type: "DELETE",
+        contentType: 'application/json',
+        success: function() {
+            console.log("Itinerary Deletion Successful");
+            location.reload();
+            }
+        });
+	// ajaxCall(url, console.log, "POST", itineraryID);
 }
 
 //Add new itinerary based on details in form
@@ -222,16 +228,18 @@ function add_itinerary() {
         shared: "0",
         userID: get_userID,
 	};
-    console.log(itinerary);
+    // console.log(itinerary);
 	var data = JSON.stringify(itinerary);
-	let url = "http://localhost:5200/itr/createITR";
+	let url = "http://localhost:8000/api/manageItinerary/itr/createITR?userID="+get_userID;
     $.ajax({ // create a new itinerary
         url: url,
         type: "POST",
         contentType: 'application/json',
         data: data,
-        success: function() {
+        success: function(response) {
             console.log("Itinerary Creation Successful");
+            open_reco_Modal(response.data.recoDetails);
+            // console.log(response.data.recoDetails);
             }
         
         });
