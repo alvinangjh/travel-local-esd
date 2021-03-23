@@ -210,7 +210,7 @@ services:
   # Kong database migration
   #######################################
   kong-migration:
-    image: kong
+    image: kong:latest
     command: "kong migrations bootstrap"
     restart: on-failure
     networks:
@@ -227,7 +227,7 @@ services:
   # Kong: The API Gateway
   #######################################
   kong:
-    image: kong
+    image: kong:latest
     restart: always
     networks:
       - travel-local
