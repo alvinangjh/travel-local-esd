@@ -3,6 +3,8 @@ version: "3.8"
 volumes:
   rabbitmq_data:
   redis_data:
+  kongadata:
+  pgdata:
 
 networks:
   travel-local:
@@ -28,7 +30,6 @@ services:
     ports:
       - "5000"
     depends_on:
-      - kong
       - redis
     networks:
       - travel-local
@@ -50,8 +51,6 @@ services:
       replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5001"
-    depends_on:
-      - kong
     networks:
       - travel-local
   
@@ -72,8 +71,6 @@ services:
       replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5002"
-    depends_on:
-      - kong
     networks:
       - travel-local
   
@@ -94,7 +91,6 @@ services:
     deploy:
       replicas: 3 #change this number for how many replicated container to deploy
     depends_on:
-      - kong
       - rabbitmq
     networks:
       - travel-local
@@ -102,7 +98,7 @@ services:
   #######################################################
   # Manage POI: The Manage POI microservice
   #######################################################
-  managePOI:
+  manage-poi:
     build:
       context: ./complexServices/
       dockerfile: managePOI.Dockerfile
@@ -121,7 +117,6 @@ services:
     ports:
       - "5100"
     depends_on:
-      - kong
       - rabbitmq
       - redis
     networks:
@@ -130,7 +125,7 @@ services:
   #######################################################
   # Manage POI: The Manage POI microservice
   #######################################################
-  manageItinerary:
+  manage-itinerary:
     build:
       context: ./complexServices/
       dockerfile: manageItinerary.Dockerfile
@@ -143,14 +138,13 @@ services:
       redisURL: redis://redis:6379/0
       itineraryURL: http://itinerary:5000/
       recommendationURL: http://recommendation:5002/recommend/
-      poiManagerURL: http://managePOI:5100/search/
+      poiManagerURL: http://manage-poi:5100/search/
       PYTHONUNBUFFERED: 1
     deploy:
       replicas: 1 #change this number for how many replicated container to deploy
     ports:
       - "5200"
     depends_on:
-      - kong
       - rabbitmq
       - redis
     networks:
@@ -204,7 +198,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     
   #######################################
   # Kong database migration
@@ -262,4 +256,4 @@ services:
     ports:
       - "1337:1337"
     volumes:
-      - ./kongadata:/app/kongadata
+      - kongadata:/app/kongadata
