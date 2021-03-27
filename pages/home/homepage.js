@@ -2,7 +2,7 @@ const apiKey = "2DeahNNW3hdNmHNNpsUFv0BH7mQeZm63"; //Hong Tao's API Auth Token
 
 // var url = "../../php/objects/userItinRetrieve.php"; //Always set url for api call
 var get_userID = sessionStorage.getItem("userID"); //Get's the current user's ID (userID)
-var url = "http://localhost:8000/api/itinerary/itinerary/all/"+ get_userID;
+var url = "http://localhost:8080/api/itinerary/itinerary/all/"+ get_userID;
 
 $.ajax({ //displaying user itin cards
     url: url,
@@ -201,7 +201,7 @@ function delete_itin(id) {
 	// var itineraryID = { itineraryID: id };
 	// itineraryID = JSON.stringify(itineraryID);
 	// let url = "../../php/objects/itinDelete.php";
-    let url = "http://localhost:8000/api/itinerary/itinerary/delete/"+id;
+    let url = "http://localhost:8080/api/itinerary/itinerary/delete/"+id;
     $.ajax({ // create a new itinerary
         url: url,
         type: "DELETE",
@@ -230,7 +230,7 @@ function add_itinerary() {
 	};
     // console.log(itinerary);
 	var data = JSON.stringify(itinerary);
-	let url = "http://localhost:8000/api/manageItinerary/itr/createITR?userID="+get_userID;
+	let url = "http://localhost:8080/api/manageItinerary/itr/createITR?userID="+get_userID;
     $.ajax({ // create a new itinerary
         url: url,
         type: "POST",
