@@ -1,5 +1,5 @@
 function call_poi_manager(keyword, categories){
-    var base_url = 'http://localhost:5100/search/';
+    var base_url = 'http://localhost:8080/api/managePOI/search/';
     var hg_list = [];
     var stb_list = [];
     var request = new XMLHttpRequest();
@@ -258,7 +258,7 @@ function call_uuid_api(uuid, category, locType) {
 		}
 	};
 
-	var base_url = "http://localhost:5100/search/";
+	var base_url = "http://localhost:8080/api/managePOI/search/" 
 	var final_url = base_url + locType + '/' + uuid + '/' + category + "?userID=" + sessionStorage.getItem("userID")
     console.log(final_url)
 	request.open("GET", final_url, true);
@@ -494,7 +494,7 @@ function redirect_to_search_page(keyword) {
 }
 
 function startPlanning() {
-	var url = "http://localhost:5000/itinerary/all/" + sessionStorage.getItem("userID") + "?userID=" + sessionStorage.getItem("userID");
+	var url = "http://localhost:8080/api/itinerary/itinerary/all/" + sessionStorage.getItem("userID") + "?userID=" + sessionStorage.getItem("userID");
 
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function () {
@@ -573,7 +573,7 @@ function addActivity() {
 
 	var checkValid = moment(startTime, "HH:mm").isBefore(moment(endTime, "HH:mm"));
 
-	var url = "http://localhost:5200/itr/addEvent" + "?userID=" + sessionStorage.getItem("userID");
+	var url = "http://localhost:8080/api/manageItinerary/itr/addEvent" + "?userID=" + sessionStorage.getItem("userID");
 
 	if (checkValid == true) {
 		document.getElementById("conflictAlert").style.display = "none";
