@@ -23,8 +23,7 @@ config = {
 }
 
 app.config.from_mapping(config)
-cache = Cache(app)
-CORS(app)  
+cache = Cache(app)  
 
 class Itinerary(db.Model): #1 class refer to 1 row
     __tablename__ = 'itinerary'
@@ -308,4 +307,5 @@ def delete_activity(eventID):
     ), 404
 
 if __name__ == '__main__':
+    CORS(app) #if app is ran using gunicorn don't add CORS (handled by krakend)
     app.run(host="0.0.0.0", port=5000, debug=True) #rmb to update this

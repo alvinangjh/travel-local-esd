@@ -18,7 +18,7 @@ config = {
 }
 app = Flask(__name__)
 cache = Cache(app, config = config)
-CORS(app)
+
 
 itinerary_URL = environ.get("itineraryURL") or "http://localhost:5000/"
 hg_URL = environ.get("hgURL") or "http://localhost:5001/hiddengem"
@@ -343,6 +343,7 @@ def logging(userID, action, logDetails, succ):
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
+    CORS(app) #if app is ran using gunicorn don't add CORS (handled by krakend)
     app.run(host="0.0.0.0", port=5100, debug=True)
     # Notes for the parameters: 
     # - debug=True will reload the program automatically if a change is detected;

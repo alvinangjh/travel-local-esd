@@ -20,6 +20,25 @@
       "address": "http://influxdb:8086",
       "ttl": "25s",
       "buffer_size": 0
+    },
+    "github_com/devopsfaith/krakend-cors": {
+      "allow_origins": [
+        "*"
+      ],
+      "allow_methods": [
+        "GET",
+        "PUT",
+        "POST",
+        "DELETE",
+        "OPTIONS"
+      ],
+      "expose_headers": [
+        "Content-Length",
+        "Content-Type"
+      ],
+      "max_age": "12h",
+      "allow_credentials": false,
+      "debug": false
     }
   },
   "timeout": "3000ms",

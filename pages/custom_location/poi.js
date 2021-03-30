@@ -116,6 +116,7 @@ function insert_poi() {
 			$("#successModal").modal("show"); //Display modal if success
 		}
 	});
+
 }
 
 function redirect_to_poi(keyword) {

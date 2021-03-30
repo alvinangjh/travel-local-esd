@@ -246,6 +246,7 @@ function add_itinerary() {
 	// var get_userID = sessionStorage.getItem("userID");
 	// ajaxCall(url, display_itin_cards, "POST", { userID: get_userID });
 	// location.reload();
+    
 }
 
 //Capitalize card theme for consistency
