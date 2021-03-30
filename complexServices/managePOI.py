@@ -18,7 +18,7 @@ config = {
 }
 app = Flask(__name__)
 cache = Cache(app, config = config)
-CORS(app)
+
 
 itinerary_URL = environ.get("itineraryURL") or "http://localhost:5000/"
 hg_URL = environ.get("hgURL") or "http://localhost:5001/hiddengem"
@@ -181,13 +181,34 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
                     "name": data["name"],
                     "poiUUID": poiUUID,
                     "description": data["body"],
-                    "reviews": data["reviews"],
-                    "rating": data["rating"],
-                    "latitude": data["location"]["latitude"],
-                    "longitude": data["location"]["longitude"],
-                    "postalCode": data["address"]["postalCode"],
                     "locCategory": data["type"]
                 }
+
+                try:
+                    result["reviews"] = data["reviews"]
+                except:
+                    pass
+                
+                try:
+                    result["rating"] = data["rating"]
+                except:
+                    result['rating'] = 0
+                
+                try:
+                    result["latitude"] = data["location"]["latitude"]
+                except:
+                    result['latitude'] = 0
+                
+                try:
+                    result["longitude"] = data["location"]["longitude"]
+                except:
+                    result['longitude'] = 0
+                
+                try:
+                    result["postalCode"] = data["address"]["postalCode"]
+                except:
+                    result['postalCode'] = ''
+
 
                 if(len(data["images"]) != 0 or data["images"][0]["uuid"] != ""):
                     result["imageUrl"] = data["images"][0]["uuid"]
@@ -322,6 +343,7 @@ def logging(userID, action, logDetails, succ):
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
+    CORS(app) #if app is ran using gunicorn don't add CORS (handled by krakend)
     app.run(host="0.0.0.0", port=5100, debug=True)
     # Notes for the parameters: 
     # - debug=True will reload the program automatically if a change is detected;

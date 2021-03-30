@@ -23,8 +23,7 @@ config = {
 }
 
 app.config.from_mapping(config)
-cache = Cache(app)
-CORS(app)  
+cache = Cache(app)  
 
 class Itinerary(db.Model): #1 class refer to 1 row
     __tablename__ = 'itinerary'
@@ -283,10 +282,11 @@ def update_activity(eventID):
 @app.route("/event/delete/<int:eventID>", methods=['DELETE'])
 def delete_activity(eventID):
     event = Event.query.filter_by(eventID=eventID).first()
-    itineraryID = event.json()["itineraryID"]
+    
     if event:
         db.session.delete(event)
         db.session.commit()
+        itineraryID = event.json()["itineraryID"]
         cache.delete(str(itineraryID))
         return jsonify(
             {
@@ -308,4 +308,5 @@ def delete_activity(eventID):
     ), 404
 
 if __name__ == '__main__':
+    CORS(app) #if app is ran using gunicorn don't add CORS (handled by krakend)
     app.run(host="0.0.0.0", port=5000, debug=True) #rmb to update this

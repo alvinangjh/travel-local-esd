@@ -24,7 +24,7 @@ config = {
 
 app.config.from_mapping(config)
 cache = Cache(app)
-CORS(app)
+
 
 itinerary_URL = environ.get("itineraryURL") or "http://localhost:5000/"
 recommendation_URL = environ.get("recommendationURL") or "http://localhost:5002/recommend/"
@@ -215,4 +215,6 @@ def logging(userID, action, logDetails, succ):
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
+    CORS(app) #if app is ran using gunicorn don't add CORS (handled by krakend)
     app.run(host="0.0.0.0", port=5200, debug=True)
+    

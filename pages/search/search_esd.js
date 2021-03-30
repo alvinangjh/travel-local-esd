@@ -39,7 +39,7 @@ function call_poi_manager(keyword, categories){
 		keyword = ''
 	}
 
-    var url = base_url + '/' + keyword + "?userID=" + sessionStorage.getItem("userID")
+    var url = base_url + keyword + "?userID=" + sessionStorage.getItem("userID")
 
     request.open("GET", url, true);
 
@@ -64,7 +64,7 @@ function parsing_data(data, type_of_data){
 
 function display_poi(name, image_uuid, uuid, category, description, type_of_data) {
 	const apiKey = "i9IigYi6bl70KMqOcpewpzHHQ2NanEqx";
-	console.log(type_of_data)
+	// console.log(type_of_data)
 	// var category_type = type_of_dataset(category);
 
     if(type_of_data == 'TA'){
@@ -94,14 +94,14 @@ function display_poi(name, image_uuid, uuid, category, description, type_of_data
 }
 
 
-function alvin_search() {
+function search_onload() {
 	checkUser();
 
 	if(new URL(window.location.href).searchParams.get("keyword") == null){
 		window.location.href = "search.html?keyword=" + "&userID=" + sessionStorage.getItem("userID")
 	}
 	document.getElementById("searching_poi").value = new URL(window.location.href).searchParams.get("keyword");
-	var keyword = new URL(window.location.href).searchParams.get("keyword") + + "&userID=" + sessionStorage.getItem("userID");
+	var keyword = new URL(window.location.href).searchParams.get("keyword");
 	document.getElementById("insert_search_title").innerHTML = keyword;
 	call_poi_manager(keyword, "all");
 }
@@ -184,7 +184,6 @@ function filter() {
 }
 
 function new_search() {
-	console.log('123')
     var checkboxes = document.getElementsByName("categories");
     var categories_array = [];
 
@@ -260,7 +259,7 @@ function call_uuid_api(uuid, category, locType) {
 
 	var base_url = "http://localhost:8080/api/managePOI/search/" 
 	var final_url = base_url + locType + '/' + uuid + '/' + category + "?userID=" + sessionStorage.getItem("userID")
-    console.log(final_url)
+    // console.log(final_url)
 	request.open("GET", final_url, true);
 
 	request.send();
@@ -502,7 +501,7 @@ function startPlanning() {
 			$("#ddlActivityDate").empty();
 			$("#ddlItinerary").empty();
 			var data = JSON.parse(request.responseText).data;
-			console.log(data)
+			// console.log(data)
 			if (data.length == 0) {
 				$("#emptyModal").modal("show");
 			} else {
@@ -577,7 +576,7 @@ function addActivity() {
 
 	if (checkValid == true) {
 		document.getElementById("conflictAlert").style.display = "none";
-		console.log(selectedItinerary)
+		// console.log(selectedItinerary)
 		var activity = {
 			poiUUID: poiUUID,
 			startTime: startTime,
@@ -615,7 +614,7 @@ function addActivity() {
 function filterActivityDate() {
 	var selected = $("#ddlItinerary option:selected").val();
 	var data = JSON.parse(sessionStorage.getItem("test")).data;
-	console.log(data)
+	// console.log(data)
 	for (item of data) {
 		if (item.itineraryID == selected) {
 			var dateArray = getDates(new Date(item.startDate), new Date(item.endDate));
