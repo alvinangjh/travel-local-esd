@@ -24,7 +24,7 @@
   },
   "timeout": "3000ms",
   "cache_ttl": "300s",
-  "output_encoding": "no-op",
+  "output_encoding": "json",
   "port": 8080,
   "name": "travel-local-services",
   "endpoints": [
@@ -218,10 +218,6 @@
           ],
           "disable_host_sanitize": false
         }
-      ],
-      "querystring_params": [
-        "userID",
-        "callback"
       ]
     },
     {

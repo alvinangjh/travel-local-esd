@@ -16,15 +16,15 @@
       "endpoint_disabled": false,
       "listen_address": ":8090"
     },
-    "github_com/letgoapp/krakend-influx": {
-      "address": "http://influxdb:8086",
-      "ttl": "25s",
-      "buffer_size": 0
+    "github_com/letgoapp/krakend-influx":{
+      "address":"http://influxdb:8086",
+      "ttl":"25s",
+      "buffer_size":0
     }
   },
   "timeout": "3000ms",
   "cache_ttl": "300s",
-  "output_encoding": "no-op",
+  "output_encoding": "json",
   "port": 8080,
   "name": "travel-local-services",
   "endpoints": [
@@ -218,10 +218,6 @@
           ],
           "disable_host_sanitize": false
         }
-      ],
-      "querystring_params": [
-        "userID",
-        "callback"
       ]
     },
     {
@@ -276,28 +272,6 @@
           "extra_config": {},
           "host": [
             "http://itinerary:5000"
-          ],
-          "disable_host_sanitize": false
-        }
-      ]
-    },
-    {
-      "endpoint": "/api/managePOI/search/",
-      "method": "GET",
-      "output_encoding": "no-op",
-      "extra_config": {},
-      "querystring_params": [
-        "userID"
-      ],
-      "backend": [
-        {
-          "url_pattern": "/search/",
-          "encoding": "no-op",
-          "sd": "static",
-          "method": "GET",
-          "extra_config": {},
-          "host": [
-            "http://manage-poi:5100"
           ],
           "disable_host_sanitize": false
         }

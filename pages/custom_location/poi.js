@@ -83,30 +83,33 @@ function EnableDisableTextBox(addressChkBox) {
 
 /* Send custom location details to PHP using AJAX */
 function insert_poi() {
-	var url = "http://localhost:5100/poi/create";
-	$img = document.getElementById("imageUrl").files[0].name; //get image file name
+	userID = sessionStorage.getItem("userID");
+	var url = "http://localhost:8080/api/managePOI/poi/create?userID="+userID;
+	img = document.getElementById("imageUrl").files[0].name; //get image file name
+	data = {
+		name: $("#locTitle").val(),
+		address: $("#locAddress").val(),
+		postalCode: $("#locPostalCode").val(),
+		description: $("#locDesc").val(),
+		locCategory: $("#categories").val(),
+		rating: $('input[name="rate"]:checked').val(),
+		imageUrl: img,
+		latitude: $("#lat").val(),
+		longitude: $("#lon").val(),
+		theme: $("#venueType").val(),
+		businessContact: $("#businessContact").val(),
+		businessEmail: $("#businessEmail").val(),
+		openTime: $("#openTime").val(),
+		closeTime: $("#closeTime").val(),
+		businessWeb: $("#businessWeb").val(),
+	}
 
+	var to_send = JSON.stringify(data);
 	$.ajax({
 		url: url,
 		type: "POST",
 		contentType: 'application/json',
-		data: JSON.stringify({
-			name: $("#locTitle").val(),
-			address: $("#locAddress").val(),
-			postalCode: $("#locPostalCode").val(),
-			description: $("#locDesc").val(),
-			locCategory: $("#categories").val(),
-			rating: $('input[name="rate"]:checked').val(),
-			imageUrl: $img,
-			latitude: $("#lat").val(),
-			longitude: $("#lon").val(),
-			theme: $("#venueType").val(),
-			businessContact: $("#businessContact").val(),
-			businessEmail: $("#businessEmail").val(),
-			openTime: $("#openTime").val(),
-			closeTime: $("#closeTime").val(),
-			businessWeb: $("#businessWeb").val(),
-		}),
+		data: to_send,
 	}).done(function (responseText) {
 		console.log(responseText);
 		if (responseText["code"] == 201) {

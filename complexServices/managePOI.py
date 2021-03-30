@@ -181,13 +181,34 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
                     "name": data["name"],
                     "poiUUID": poiUUID,
                     "description": data["body"],
-                    "reviews": data["reviews"],
-                    "rating": data["rating"],
-                    "latitude": data["location"]["latitude"],
-                    "longitude": data["location"]["longitude"],
-                    "postalCode": data["address"]["postalCode"],
                     "locCategory": data["type"]
                 }
+
+                try:
+                    result["reviews"] = data["reviews"]
+                except:
+                    pass
+                
+                try:
+                    result["rating"] = data["rating"]
+                except:
+                    result['rating'] = 0
+                
+                try:
+                    result["latitude"] = data["location"]["latitude"]
+                except:
+                    result['latitude'] = 0
+                
+                try:
+                    result["longitude"] = data["location"]["longitude"]
+                except:
+                    result['longitude'] = 0
+                
+                try:
+                    result["postalCode"] = data["address"]["postalCode"]
+                except:
+                    result['postalCode'] = ''
+
 
                 if(len(data["images"]) != 0 or data["images"][0]["uuid"] != ""):
                     result["imageUrl"] = data["images"][0]["uuid"]

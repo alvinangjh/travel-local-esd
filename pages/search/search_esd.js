@@ -39,7 +39,7 @@ function call_poi_manager(keyword, categories){
 		keyword = ''
 	}
 
-    var url = base_url + '/' + keyword + "?userID=" + sessionStorage.getItem("userID")
+    var url = base_url + keyword + "?userID=" + sessionStorage.getItem("userID")
 
     request.open("GET", url, true);
 
@@ -94,14 +94,14 @@ function display_poi(name, image_uuid, uuid, category, description, type_of_data
 }
 
 
-function alvin_search() {
+function search_onload() {
 	checkUser();
 
 	if(new URL(window.location.href).searchParams.get("keyword") == null){
 		window.location.href = "search.html?keyword=" + "&userID=" + sessionStorage.getItem("userID")
 	}
 	document.getElementById("searching_poi").value = new URL(window.location.href).searchParams.get("keyword");
-	var keyword = new URL(window.location.href).searchParams.get("keyword") + + "&userID=" + sessionStorage.getItem("userID");
+	var keyword = new URL(window.location.href).searchParams.get("keyword");
 	document.getElementById("insert_search_title").innerHTML = keyword;
 	call_poi_manager(keyword, "all");
 }
@@ -184,7 +184,7 @@ function filter() {
 }
 
 function new_search() {
-	console.log('123')
+	// console.log('123')
     var checkboxes = document.getElementsByName("categories");
     var categories_array = [];
 
