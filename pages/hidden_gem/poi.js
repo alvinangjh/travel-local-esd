@@ -35,7 +35,7 @@ $("#closeTime").timepicker({
 /* Once customer input postal code, fillAddress function will retrieve address from one map and auto-fill the address textbox */
 function fillAddress() {
 	var searchval = document.getElementById("locPostalCode").value; /* Retrieve postal code */
-	console.log(searchval);
+	// console.log(searchval);
 	if (searchval.length == 0) { /* If postal code is not filled, return empty string */
 		document.getElementById("locAddress").value = "";
 	}
@@ -111,7 +111,7 @@ function insert_poi() {
 		contentType: 'application/json',
 		data: to_send,
 	}).done(function (responseText) {
-		console.log(responseText);
+		// console.log(responseText);
 		if (responseText["code"] == 201) {
 			$("#successModal").modal("show"); //Display modal if success
 		}

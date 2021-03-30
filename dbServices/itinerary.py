@@ -282,10 +282,11 @@ def update_activity(eventID):
 @app.route("/event/delete/<int:eventID>", methods=['DELETE'])
 def delete_activity(eventID):
     event = Event.query.filter_by(eventID=eventID).first()
-    itineraryID = event.json()["itineraryID"]
+    
     if event:
         db.session.delete(event)
         db.session.commit()
+        itineraryID = event.json()["itineraryID"]
         cache.delete(str(itineraryID))
         return jsonify(
             {

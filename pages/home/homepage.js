@@ -163,7 +163,7 @@ function open_Modal(itin) {
 }
 
 function open_reco_Modal(response) {
-    console.log(response);
+    // console.log(response);
 	// document.getElementById("accept").id = itin;
     // console.log(itin);
     // recommended_events
@@ -197,7 +197,7 @@ function open_reco_Modal(response) {
 
 //delete itinerary ref (itineraryID)
 function delete_itin(id) {
-    console.log(id);
+    // console.log(id);
 	// var itineraryID = { itineraryID: id };
 	// itineraryID = JSON.stringify(itineraryID);
 	// let url = "../../php/objects/itinDelete.php";

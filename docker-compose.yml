@@ -181,6 +181,7 @@ services:
   ######################################
   kraken_designer:
     image: devopsfaith/krakendesigner:latest
+    restart: always
     ports:
       - 8787:80
     networks:
@@ -190,6 +191,7 @@ services:
   #####################################
   krakend_ce:
     image: devopsfaith/krakend:1.3.0
+    restart: always
     volumes:
       - ./krakend:/etc/krakend
     ports:
@@ -202,6 +204,7 @@ services:
   #####################################
   influxdb:
     image: influxdb:1.8
+    restart: always
     ports:
       - "8086:8086"
     volumes:
@@ -219,6 +222,7 @@ services:
   #####################################
   grafana:
     image: grafana/grafana
+    restart: always
     ports:
       - "3000:3000"
     depends_on: 
