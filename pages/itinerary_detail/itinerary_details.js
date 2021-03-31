@@ -86,32 +86,31 @@ function retrieveActivity() {
 
 	var activities = [];
 	// var baseUrl = "../../php/objects/activityRetrieve.php";
-	var baseUrl = "http://localhost:5200/itr/allEvents/" + itineraryID + "?userID=" + sessionStorage.getItem("userID");
+	var baseUrl = "http://localhost:8080/api/manageItinerary/itr/allEvents/" + itineraryID + "?userID=" + sessionStorage.getItem("userID");
 
 	$.ajax({
 		url: baseUrl,
 		type: "GET",
 		dataType: "json",
 	}).done(function (responseText) {
-		var data = responseText["data"];
+		var eventData = responseText["eventData"];
 
-		const datetimes = [data];
+		const datetimes = [eventData[0]]
 
-		const sorted = datetimes.sort((a, b) => {
-			const aDate = new Date(a.date + " " + a.time);
-			const bDate = new Date(b.date + " " + b.time);
+		console.log(datetimes[0])
 
-			return bDate.getTime() - aDate.getTime();
+		const sorted = datetimes[0].sort((a, b) => {
+			const aDate = new Date(moment(a.eventDate).format("DD MMM YYYY") + " " + a.startTime);
+			const bDate = new Date(moment(b.eventDate).format("DD MMM YYYY") + " " + b.startTime);
+			return aDate.getTime() - bDate.getTime();
 		});
-
-		console.log(sorted[0]);
 
 		/* Sort activities based on start time (earliest first) */
 		// var sorted = data.sort((a, b) => {
 		// 	return a.startTime.localeCompare(b.startTime);
 		// });
-
-		for (item of sorted[0]) {
+		
+		for (item of sorted) {
 			var activity = {
 				activityID: item.eventID,
 				poiUUID: item.poiUUID,
@@ -121,8 +120,8 @@ function retrieveActivity() {
 				locType: item.locType,
 				locDataset: item.locCategory,
 				locDesc: item["POIDetails"].description,
-				openingHour: item["POIDetails"].startTime,
-				closingHour: item["POIDetails"].endTime,
+				openingHour: item["POIDetails"].openTime,
+				closingHour: item["POIDetails"].closeTime,
 				latitude: item["POIDetails"].latitude,
 				longitude: item["POIDetails"].longitude,
 				locTitle: item["POIDetails"].name,
@@ -130,7 +129,7 @@ function retrieveActivity() {
 			};
 			activities.push(activity);
 		}
-		console.log(activities);
+
 		generateDay(itineraryID, activities);
 	});
 }
@@ -139,7 +138,7 @@ function retrieveActivity() {
 function generateDay(itineraryID, activities) {
 	// var itineraryID = itineraryID;
 	// var baseUrl = "../../php/objects/itineraryRetrieve.php";
-	var baseUrl = "http://localhost:5000/itinerary/" + itineraryID + "?userID=" + sessionStorage.getItem("userID");
+	var baseUrl = "http://localhost:8080/api/manageItinerary/itr/allEvents/" + itineraryID + "?userID=" + sessionStorage.getItem("userID");
 	var ownParam = "yes";
 	// var ownParam = new URL(window.location.href).searchParams.get("own");
 
@@ -148,7 +147,7 @@ function generateDay(itineraryID, activities) {
 		type: "GET",
 		dataType: "json",
 	}).done(function (responseText) {
-		var result = responseText["data"];
+		var result = responseText["itiData"];
 
 		document.getElementById("rdBtn" + result.theme.charAt(0).toUpperCase() + result.theme.slice(1)).checked = true;
 
@@ -216,7 +215,6 @@ function populateItinerary(activities, startDate, endDate) {
 
 	/* For each activity, generate the details needed and image */
 	for (var i = 0; i < activities.length; i++) {
-		console.log(activities[i]);
 		if (activities[i].locType == "HG") {
 			var activityID = activities[i].activityID;
 			var locTitle = activities[i].locTitle;
@@ -224,7 +222,7 @@ function populateItinerary(activities, startDate, endDate) {
 			var poiUUID = activities[i].poiUUID;
 			var activityDate = activities[i].activityDate;
 
-			var dirUrl = "https://www.google.com/maps/dir/?api=1&destination=" + activities[i].latitude + "," + activites[i].longitude;
+			var dirUrl = "https://www.google.com/maps/dir/?api=1&destination=" + activities[i].latitude + "," + activities[i].longitude;
 
 			var imageUrl = activities[i].imageUrl;
 
@@ -622,7 +620,7 @@ function sleep(delay) {
 /* Allow the user to edit activity based on time and date */
 function editActivity(clicked_id) {
 	// var baseUrl = "../../php/objects/activityUpdate.php";
-	var baseUrl = "http://localhost:5000/event/update/" + clicked_id;
+	var baseUrl = "http://localhost:8080/api/itinerary/event/update/" + clicked_id;
 	var ddlDate = document.getElementById("ddlDate" + clicked_id);
 	var startTime = document.getElementById("tbStartTime" + clicked_id).value;
 	var endTime = document.getElementById("tbEndTime" + clicked_id).value;
@@ -655,7 +653,7 @@ function editActivity(clicked_id) {
 /* delete activity */
 function deleteActivity(clicked_id) {
 	// var baseUrl = "../../php/objects/activityDelete.php";
-	var baseUrl = "http://localhost:5000/event/delete/" + clicked_id;
+	var baseUrl = "http://localhost:8080/api/itinerary/event/delete/" + clicked_id;
 
 	$.ajax({
 		url: baseUrl,
@@ -719,7 +717,7 @@ function redirectCopied(id) {
 /* Edit itinerary title */
 function editItinerary() {
 	var itineraryID = new URL(window.location.href).searchParams.get("id");
-	var baseUrl = "http://localhost:5000/itinerary/update/" + itineraryID;
+	var baseUrl = "http://localhost:8080/api/itinerary/itinerary/update/" + itineraryID;
 
 	$.ajax({
 		url: baseUrl,
@@ -727,7 +725,6 @@ function editItinerary() {
 		contentType: "application/json",
 		data: JSON.stringify({ name: $("#tbItineraryTitle").val() }),
 	}).done(function (responseText) {
-		console.log(responseText);
 		if (responseText["code"] == 200) {
 			window.location.reload();
 		}
