@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     }
 db = SQLAlchemy(app)
 
-CORS(app)  
+# CORS(app)
 
 class Log(db.Model): #1 class refer to 1 row
     __tablename__ = 'log'
@@ -55,7 +55,7 @@ def receiveOrderLog():
 
 def callback(channel, method, properties, body):
     print("\nReceived an action log with routing key " + method.routing_key)
-    status = method.routing_key.split('.')[1]
+    status = method.routing_key.split('.')[0]
     results = processActionLog(json.loads(body), status)
     print("Printing write results:")
     print(results[0].get_json())

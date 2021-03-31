@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `log` (
   `logID` int(11) NOT NULL AUTO_INCREMENT,
   `timeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `userID` int(11) NOT NULL,
-  `action` int(11) NOT NULL,
+  `action` varchar(256) NOT NULL,
   `logDetails` varchar(256) NOT NULL,
   `status` varchar(256) NOT NULL,
   PRIMARY KEY (`logID`)

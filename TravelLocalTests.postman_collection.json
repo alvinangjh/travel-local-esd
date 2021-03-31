@@ -1,0 +1,1065 @@
+{
+	"info": {
+		"_postman_id": "3429e697-652a-4f0b-9623-e5cd0c75d9e0",
+		"name": "TravelLocalTests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ItineraryEndPoints",
+			"item": [
+				{
+					"name": "localhost",
+					"item": [
+						{
+							"name": "CreateItinerary",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"flaskTest\",\r\n    \"startDate\": \"2021-08-08\",\r\n    \"endDate\": \"2021-08-09\",\r\n    \"theme\": \"casual\",\r\n    \"userID\": 5,\r\n    \"shared\": 10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/itinerary",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"itinerary"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetSpecificItinerary",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/itinerary/93",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"itinerary",
+										"93"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateItinerary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"endDate\": \"2021-08-10\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/itinerary/update/93",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"itinerary",
+										"update",
+										"93"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteItinerary",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/itinerary/delete/93",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"itinerary",
+										"delete",
+										"93"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAllItinerary",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/itinerary/all/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"itinerary",
+										"all",
+										"3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "API Gateway",
+					"item": [
+						{
+							"name": "GetSpecificItineraryGateway",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/itinerary/93",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"itinerary",
+										"93"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateItineraryGateway",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"flaskTest\",\r\n    \"startDate\": \"2021-08-08\",\r\n    \"endDate\": \"2021-08-09\",\r\n    \"theme\": \"casual\",\r\n    \"userID\": 5,\r\n    \"shared\": 10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/itinerary",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"itinerary"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateItineraryGateway",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"endDate\": \"2021-08-10\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/itinerary/update/10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"itinerary",
+										"update",
+										"10"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteItineraryGateway",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/itinerary/delete/103",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"itinerary",
+										"delete",
+										"103"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetAllItineraryGateway",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/itinerary/all/10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"itinerary",
+										"all",
+										"10"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "EventEndPoints",
+			"item": [
+				{
+					"name": "localhost",
+					"item": [
+						{
+							"name": "AddEvent",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"poiUUID\": 4,\r\n    \"startTime\": \"12:00:00\",\r\n    \"endTime\": \"15:00:00\",\r\n    \"eventDate\": \"2021-08-08\",\r\n    \"locType\": \"HG\",\r\n    \"locCategory\": \"venue\",\r\n    \"itineraryID\":  94\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/event",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"event"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteEvent",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/event/delete/176",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"event",
+										"delete",
+										"176"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateEvent",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"endTime\": \"11:00:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/event/update/41",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"event",
+										"update",
+										"41"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetEvents",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/event/9",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"event",
+										"9"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "API Gateway",
+					"item": [
+						{
+							"name": "UpdateEventGateway",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"endTime\": \"11:00:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/event/update/63",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"event",
+										"update",
+										"63"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AddEventGateway",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"poiUUID\": 4,\r\n    \"startTime\": \"12:00:00\",\r\n    \"endTime\": \"15:00:00\",\r\n    \"eventDate\": \"2021-08-08\",\r\n    \"locType\": \"HG\",\r\n    \"locCategory\": \"venue\",\r\n    \"itineraryID\":  94\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/event",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"event"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DeleteEventGateway",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/event/delete/43",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"event",
+										"delete",
+										"43"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetEventsGateway",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/itinerary/event/9",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"itinerary",
+										"event",
+										"9"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "HGEndPoints",
+			"item": [
+				{
+					"name": "GetHGByUUID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/hiddengem/one/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"hiddengem",
+								"one",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateHG",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"flaskTest\",\r\n    \"address\": \"In Your Heart\",\r\n    \"postalCode\": 5201314,\r\n    \"description\": \"Best Location for your heart\",\r\n    \"locCategory\": \"walking_trail\",\r\n    \"rating\": 5,\r\n    \"imageUrl\": \"heart.jpg\",\r\n    \"latitude\": 1.38420081138611,\r\n    \"longitude\":103.87859344482422,\r\n    \"theme\": \"Family\",\r\n    \"businessContact\":5201314,\r\n    \"businessEmail\":\"inyourheart@gmail.com\",\r\n    \"openTime\": \"09:00:00\",\r\n    \"closeTime\": \"18:00:00\",\r\n    \"businessWeb\":\"inyourheart.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5001/hiddengem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"hiddengem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetHGByKeyword",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/hiddengem/all/sembawang",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"hiddengem",
+								"all",
+								"sembawang"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RecommendationEndPoint",
+			"item": [
+				{
+					"name": "GetRecommendation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5002/recommend/family",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"recommend",
+								"family"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ManagePOIEndPoints",
+			"item": [
+				{
+					"name": "localhost",
+					"item": [
+						{
+							"name": "GetAllEventsByKeyword",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5100/search/sembawang?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5100",
+									"path": [
+										"search",
+										"sembawang"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetHGEventByUUID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5100/search/HG/3?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5100",
+									"path": [
+										"search",
+										"HG",
+										"3"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetSTBEventByUUID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5100/search/TA/0010d7d88f8d8f44053a9b3069b16bd1ed7/accommodation?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5100",
+									"path": [
+										"search",
+										"TA",
+										"0010d7d88f8d8f44053a9b3069b16bd1ed7",
+										"accommodation"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateHiddenGem",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"flaskTest\",\r\n    \"address\": \"In Your Heart\",\r\n    \"postalCode\": 5201314,\r\n    \"description\": \"Best Location for your heart\",\r\n    \"locCategory\": \"walking_trail\",\r\n    \"rating\": 5,\r\n    \"imageUrl\": \"heart.jpg\",\r\n    \"latitude\": 1.38420081138611,\r\n    \"longitude\":103.87859344482422,\r\n    \"theme\": \"Family\",\r\n    \"businessContact\":5201314,\r\n    \"businessEmail\":\"inyourheart@gmail.com\",\r\n    \"openTime\": \"09:00:00\",\r\n    \"closeTime\": \"18:00:00\",\r\n    \"businessWeb\":\"inyourheart.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5100/poi/create?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5100",
+									"path": [
+										"poi",
+										"create"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "API Gateway",
+					"item": [
+						{
+							"name": "GetAllEventsByKeywordGateway",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/managePOI/search/sembawang?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"managePOI",
+										"search",
+										"sembawang"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetHGEventByUUIDGateway",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/managePOI/search/HG/4?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"managePOI",
+										"search",
+										"HG",
+										"4"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetSTBEventByUUIDGateway",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/managePOI/search/TA/00907d94b6b687547348d4b9f9031830a88/walking-trail?userID=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"managePOI",
+										"search",
+										"TA",
+										"00907d94b6b687547348d4b9f9031830a88",
+										"walking-trail"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateHiddenGemGateway",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"flaskTest\",\r\n    \"address\": \"In Your Heart\",\r\n    \"postalCode\": 5201314,\r\n    \"description\": \"Best Location for your heart\",\r\n    \"locCategory\": \"walking_trail\",\r\n    \"rating\": 5,\r\n    \"imageUrl\": \"heart.jpg\",\r\n    \"latitude\": 1.38420081138611,\r\n    \"longitude\":103.87859344482422,\r\n    \"theme\": \"Family\",\r\n    \"businessContact\":5201314,\r\n    \"businessEmail\":\"inyourheart@gmail.com\",\r\n    \"openTime\": \"09:00:00\",\r\n    \"closeTime\": \"18:00:00\",\r\n    \"businessWeb\":\"inyourheart.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/managePOI/poi/create?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"managePOI",
+										"poi",
+										"create"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ManageItineraryEndPoints",
+			"item": [
+				{
+					"name": "localhost",
+					"item": [
+						{
+							"name": "GetAllEventsInItinerary",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5200/itr/allEvents/91?userID=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5200",
+									"path": [
+										"itr",
+										"allEvents",
+										"91"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateItinerary",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"flaskTest\",\r\n    \"startDate\": \"2021-08-08\",\r\n    \"endDate\": \"2021-08-09\",\r\n    \"theme\": \"casual\",\r\n    \"userID\": 5,\r\n    \"shared\": 10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5200/itr/createITR?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5200",
+									"path": [
+										"itr",
+										"createITR"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AddEvent",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"poiUUID\": 3,\r\n    \"startTime\": \"12:00:00\",\r\n    \"endTime\": \"15:00:00\",\r\n    \"eventDate\": \"2021-08-08\",\r\n    \"locType\": \"HG\",\r\n    \"locCategory\": \"venue\",\r\n    \"itineraryID\":  10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5200/itr/addEvent?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5200",
+									"path": [
+										"itr",
+										"addEvent"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "API Gateway",
+					"item": [
+						{
+							"name": "GetAllEventsInItineraryGateway",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/manageItinerary/itr/allEvents/10?userID=100",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"manageItinerary",
+										"itr",
+										"allEvents",
+										"10"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CreateItineraryGateway",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"flaskTest\",\r\n    \"startDate\": \"2021-08-08\",\r\n    \"endDate\": \"2021-08-09\",\r\n    \"theme\": \"casual\",\r\n    \"userID\": 5,\r\n    \"shared\": 10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/manageItinerary/itr/createITR?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"manageItinerary",
+										"itr",
+										"createITR"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AddEventGateway",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"poiUUID\": 3,\r\n    \"startTime\": \"12:00:00\",\r\n    \"endTime\": \"15:00:00\",\r\n    \"eventDate\": \"2021-08-08\",\r\n    \"locType\": \"HG\",\r\n    \"locCategory\": \"venue\",\r\n    \"itineraryID\":  10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/manageItinerary/itr/addEvent?userID=123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"manageItinerary",
+										"itr",
+										"addEvent"
+									],
+									"query": [
+										{
+											"key": "userID",
+											"value": "123"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
