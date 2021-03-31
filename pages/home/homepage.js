@@ -174,7 +174,7 @@ function open_reco_Modal(response) {
     reco_view.innerHTML = "";
     for (var i = 0; i < response.length; i++){
         var new_card = document.createElement("div");
-        var poiURL = `http://localhost/travel-local-esd/pages/search/specific_poi_design.html?uuid=${response[i].poiUUID}&type=${response[i].locCategory}&locType=${response[i].locType}`;
+        var poiURL = `http://localhost/travel-local-esd/pages/search/specific_poi_design.html?uuid=${response[i].poiUUID}&category=${response[i].locCategory}&locType=${response[i].locType}`;
         // console.log(poiURL);
         new_card.className = "col-4";
         new_card.innerHTML = `
