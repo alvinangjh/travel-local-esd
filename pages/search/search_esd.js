@@ -635,5 +635,5 @@ function filterActivityDate() {
 }
 
 function goToItinerary(id) {
-	window.location.href = "../itinerary_detail/itinerary_details.html?id=" + id + "&own=yes";
+	window.location.href = "../itinerary_detail/itinerary_details.html?id=" + id;
 }

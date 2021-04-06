@@ -153,7 +153,7 @@ function display_recommended_cards(itineraries) {
 
 //redirect upon clicking itinerary card to itinerary
 function view_itin(link, own) {
-	window.location.href = "../itinerary_detail/itinerary_details.html?id=" + link + "&own=" + own;
+	window.location.href = "../itinerary_detail/itinerary_details.html?id=" + link;
 }
 
 //modal toggle to prevent accidental deletion

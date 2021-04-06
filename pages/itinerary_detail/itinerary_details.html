@@ -98,131 +98,12 @@
 								<i class="fas fa-cog"></i> Settings
 							</a>
 							<div class="dropdown-menu" id="ddlSetting" aria-labelledby="dropdownMenuLink">
-								<button type="button" id="btnChangeTheme" class="dropdown-item" data-toggle="modal" data-target="#themeModal">
+								<button type="button" id="btnChangeTheme" class="dropdown-item">
 									<i class="icon fas fa-palette"></i> Change theme
 								</button>
-								<!-- <a href="#" class="dropdown-item"><i class="icon fas fa-palette"></i> Change theme</a> -->
-								<button type="button" id="btnCopy" class="dropdown-item" onclick="copyItinerary()">
-									<i class="icon fas fa-copy"></i> Copy itinerary
-								</button>
-								<button type="button" class="dropdown-item" onclick="shareItinerary()">
-									<i class="icon fas fa-link"></i> Share itinerary
-								</button>
-								<button onclick="display()" class="dropdown-item"><i class="icon fas fa-print"></i> Print itinerary</button>
-							</div>
-						</div>
-					</div>
-
-					<div class="modal fade" id="shareModal" tabindex="-1">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="lblShareModal">Shareable Link</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
-								<div class="modal-body">
-									<div class="form-row">
-										<div class="input-group">
-											<input type="text" class="form-control" readonly id="tbShareLink" />
-											<div class="input-group-prepend">
-												<button class="input-group-text bg-white btn btn-link icon far fa-copy" onclick="copyLink()"></button>
-											</div>
-										</div>
-									</div>
-									<small id="successLink" class="text-success form-text">Link has successfully copied to clipboard!</small>
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="modal fade" id="themeModal" tabindex="-1">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="lblThemeModal">Itinerary Themes</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
-								<div class="modal-body">
-									<div class="row">
-										<div class="col-md-6 text-center">
-											<div class="form-check">
-												<img src="../home/images/casual.jpg" width="70%" />
-												<br />
-												<input class="form-check-input" type="radio" id="rdBtnCasual" value="casual" name="rdBtnTheme" />
-												<label class="form-check-label h6" for="rdBtnCasual"> Casual </label>
-											</div>
-										</div>
-
-										<div class="col-md-6 text-center">
-											<div class="form-check">
-												<img src="../home/images/nature.jpg" width="70%" />
-												<br />
-												<input class="form-check-input" type="radio" id="rdBtnNature" name="rdBtnTheme" value="nature" />
-												<label class="form-check-label h6" for="rdBtnNature"> Nature </label>
-											</div>
-										</div>
-									</div>
-
-									<div class="row mt-4">
-										<div class="col-md-6 text-center">
-											<div class="form-check">
-												<img src="../home/images/romantic.jpg" width="70%" />
-												<br />
-												<input class="form-check-input" type="radio" id="rdBtnRomantic" name="rdBtnTheme" value="romantic" />
-												<label class="form-check-label h6" for="rdBtnRomantic"> Romantic </label>
-											</div>
-										</div>
-
-										<div class="col-md-6 text-center">
-											<div class="form-check">
-												<img src="../home/images/family.jpg" width="70%" />
-												<br />
-												<input class="form-check-input" type="radio" id="rdBtnFamily" name="rdBtnTheme" value="family" />
-												<label class="form-check-label h6" for="rdBtnFamily"> Family </label>
-											</div>
-										</div>
-									</div>
-									<!-- <button id="nature" class="btn btn-success btn-block" onclick="changeTheme(this.id)">
-								Nature
-							</button>
-							<button id="family" class="btn btn-primary btn-block" onclick="changeTheme(this.id)">
-								Family
-							</button>
-							<button id="romantic" class="btn btn-danger btn-block" onclick="changeTheme(this.id)">
-								Romantic
-							</button> -->
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-									<button id="btnSubmitTheme" class="btn btn-danger" onclick="changeTheme()">Save Changes</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="modal fade" id="copySuccessModal" tabindex="-1">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="copyStatusTitle"></h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
-								<div class="modal-body">
-									<h5 id="copyStatusMsg"></h5>
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-									<button type="button" id="btnGoToCopied" class="btn btn-danger">Go to copied itinerary</button>
-								</div>
+								<button type="button" id="btnCopy" class="dropdown-item"><i class="icon fas fa-copy"></i> Copy itinerary</button>
+								<button type="button" class="dropdown-item"><i class="icon fas fa-link"></i> Share itinerary</button>
+								<button class="dropdown-item"><i class="icon fas fa-print"></i> Print itinerary</button>
 							</div>
 						</div>
 					</div>
@@ -270,7 +151,7 @@
 			</div>
 
 			<footer class="footer">
-				<p class="pl-5 text-muted pt-2 mb-0">© 2020 Travel Local. All Rights Reserved.</p>
+				<p class="pl-5 text-muted pt-2 mb-0">© 2021 Travel Local. All Rights Reserved.</p>
 			</footer>
 		</div>
 
