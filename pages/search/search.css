@@ -61,9 +61,9 @@
 
 @media (min-width: 1200px) {
   #filterDiv {
-    position: absolute;
+    position: relative;
     overflow: hidden;
-    z-index: 99;  
+    z-index: 99;
   }
 }
 /*# sourceMappingURL=search.css.map */
