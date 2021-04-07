@@ -140,6 +140,7 @@ function populateItinerary(activities, startDate, endDate) {
 			var locDesc = activities[i].locDesc;
 			var poiUUID = activities[i].poiUUID;
 			var activityDate = activities[i].activityDate;
+			var locCategory = activities[i].locDataset;
 
 			var dirUrl = "https://www.google.com/maps/dir/?api=1&destination=" + activities[i].latitude + "," + activities[i].longitude;
 
@@ -185,7 +186,7 @@ function populateItinerary(activities, startDate, endDate) {
 
 						<div class="col-md-6">
 							<div class="card-body">
-								<h5 id="poiTitle" class="card-title"><a href="../search/specific_gem_design.html?locID=${poiUUID}&locType=HG">${locTitle}</a></h5>
+								<h5 id="poiTitle" class="card-title"><a href="../search/specific_poi_design.html?uuid=${poiUUID}&category=${locCategory}&locType=HG">${locTitle}</a></h5>
 								<p class="card-text mb-2">
 									<p class="mb-1"><medium class="text-muted"><i class="far fa-clock"></i> Opening Hours: ${openingHour} - ${closingHour}</medium></p>
 									<p class="mb-0"><medium class="text-muted"><i class="fas fa-car"></i><a href="${dirUrl}" target="_blank"> How to get to there?</a></medium></p>
@@ -315,7 +316,8 @@ function populateItinerary(activities, startDate, endDate) {
 			var locDesc = activities[i].locDesc;
 			var poiUUID = activities[i].poiUUID;
 			var activityDate = activities[i].activityDate;
-			var locDataset = activities[i].locCategory;
+			var locCategory = activities[i].locDataset;
+			console.log(locCategory)
 
 			var dirUrl = "https://www.google.com/maps/dir/?api=1&destination=" + activities[i].latitude + "," + activities[i].longitude;
 
@@ -361,7 +363,7 @@ function populateItinerary(activities, startDate, endDate) {
 
 					<div class="col-md-6">
 						<div class="card-body">
-							<h5 id="poiTitle" class="card-title"><a href="../search/specific_poi_design.html?uuid=${poiUUID}&type=${locDataset}&locType=TA">${locTitle}</a></h5>
+							<h5 id="poiTitle" class="card-title"><a href="../search/specific_poi_design.html?uuid=${poiUUID}&category=${locCategory}&locType=TA">${locTitle}</a></h5>
 							<p class="card-text mb-2">
 								<p class="mb-1"><medium class="text-muted"><i class="far fa-clock"></i> Opening Hours: ${openingHour} - ${closingHour}</medium></p>
 								<p class="mb-0"><medium class="text-muted"><i class="fas fa-car"></i><a href="${dirUrl}" target="_blank"> How to get to there?</a></medium></p>
