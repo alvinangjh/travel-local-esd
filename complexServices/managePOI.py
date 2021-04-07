@@ -67,13 +67,13 @@ def searchEventsByKeyword(keyword = ""):
         }
         code = 404 
         succ = "error"
-
-    result = {
-        "code":200,
-        "hgData": hgData,
-        "stbData": stbData
-    }
-    code = 200
+    else:
+        result = {
+            "code":200,
+            "hgData": hgData,
+            "stbData": stbData
+        }
+        code = 200
 
     logging(userID, "searchKeyword", result, succ)
     return jsonify(result), code
@@ -256,10 +256,10 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
                     return jsonify(result), code
                 except:
                     result = jsonify({
-                        "code": "500",
+                        "code": "404",
                         "data": event_result["message"]
                     })
-                    return result, 500
+                    return result, 404
         elif locType == "HG":
             #call Hidden Gem Service
             url = hg_URL + "/one/"+poiUUID
@@ -269,11 +269,11 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
                 return jsonify(result), code
         else:
             result = {
-                "code": 404,
+                "code": 400,
                 "locType": locType,
                 "data": "Undefined locType."
             }
-            code = 404
+            code = 400
 
         cache.set(poiUUID, (jsonify(result),code), timeout = 43200)
         if userID != '0':
