@@ -135,7 +135,7 @@ function populateItinerary(activities, startDate, endDate) {
 	/* For each activity, generate the details needed and image */
 	for (var i = 0; i < activities.length; i++) {
 		if (activities[i].locType == "HG") {
-			var activityID = activities[i].activityID;
+			var activityID = activities[i].eventID;
 			var locTitle = activities[i].locTitle;
 			var locDesc = activities[i].locDesc;
 			var poiUUID = activities[i].poiUUID;
@@ -310,7 +310,7 @@ function populateItinerary(activities, startDate, endDate) {
 			}
 
 		} else {
-			var activityID = activities[i].activityID;
+			var activityID = activities[i].eventID;
 			var locTitle = activities[i].locTitle;
 			var locDesc = activities[i].locDesc;
 			var poiUUID = activities[i].poiUUID;
