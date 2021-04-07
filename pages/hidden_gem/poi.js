@@ -113,6 +113,10 @@ function insert_poi() {
 	}).done(function (responseText) {
 		// console.log(responseText);
 		if (responseText["code"] == 201) {
+			// console.log(responseText)
+			uuid = responseText["data"]["poiUUID"]
+			locCategory = responseText["data"]["locCategory"]
+			document.getElementById("viewPOI").setAttribute("onclick",`redirect('${uuid}','${locCategory}')`)
 			$("#successModal").modal("show"); //Display modal if success
 		}
 	});
@@ -123,6 +127,9 @@ function redirect_to_poi(keyword) {
 	window.location.href = "../search/search.html?keyword=" + keyword;
 }
 
+function redirect(uuid, category) {
+	window.location.href = "../search/specific_poi_design.html?uuid=" + uuid + "&category=" + category + "&locType=HG";
+}
 
 /* Check if sessionStorage userID exist, if not send to login page */
 function checkUser() {
