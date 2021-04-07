@@ -303,7 +303,7 @@ def delete_activity(eventID):
             "data": {
                 "eventID": eventID
             },
-            "message": "Activity not found."
+            "message": "Event not found."
         }
     ), 404
 
