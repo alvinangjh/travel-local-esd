@@ -47,6 +47,7 @@ function retrieveActivity() {
 		});
 		
 		for (item of sorted) {
+			console.log(item)
 			var activity = {
 				activityID: item.eventID,
 				poiUUID: item.poiUUID,
@@ -135,7 +136,7 @@ function populateItinerary(activities, startDate, endDate) {
 	/* For each activity, generate the details needed and image */
 	for (var i = 0; i < activities.length; i++) {
 		if (activities[i].locType == "HG") {
-			var activityID = activities[i].eventID;
+			var activityID = activities[i].activityID;
 			var locTitle = activities[i].locTitle;
 			var locDesc = activities[i].locDesc;
 			var poiUUID = activities[i].poiUUID;
@@ -311,7 +312,7 @@ function populateItinerary(activities, startDate, endDate) {
 			}
 
 		} else {
-			var activityID = activities[i].eventID;
+			var activityID = activities[i].activityID;
 			var locTitle = activities[i].locTitle;
 			var locDesc = activities[i].locDesc;
 			var poiUUID = activities[i].poiUUID;
@@ -463,8 +464,8 @@ function populateItinerary(activities, startDate, endDate) {
 				timeFormat: "hh:mm p",
 				interval: 15,
 				defaultTime: startTime,
-				minTime: "09:00 AM",
-				maxTime: "02:00 PM",
+				minTime: openingHour,
+				maxTime: closingHour,
 				dropdown: true,
 				dynamic: false,
 				scrollbar: false,
