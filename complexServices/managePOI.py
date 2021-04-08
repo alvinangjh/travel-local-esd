@@ -253,19 +253,23 @@ def searchSpecificEvent(locType, poiUUID, locCategory = None):
                 #if error
                 try:
                     result = event_result["status"]
+                    logging(userID, "searchUUID", result, "error")
                     return jsonify(result), code
                 except:
-                    result = jsonify({
+                    result = {
                         "code": "404",
                         "data": event_result["message"]
-                    })
-                    return result, 404
+                    }
+
+                    logging(userID,"searchUUID", result, "error")
+                    return jsonify(result), 404
         elif locType == "HG":
             #call Hidden Gem Service
             url = hg_URL + "/one/"+poiUUID
             result = invoke_http(url)
             code = result["code"]
             if code not in range(200,300):
+                logging(userID, "searchUUId", result, "error")
                 return jsonify(result), code
         else:
             result = {
