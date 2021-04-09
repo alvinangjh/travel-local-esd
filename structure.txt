@@ -1,0 +1,77 @@
+TRAVEL-LOCAL-ESD
+|   amqp_setup.py                       #setup file for amqp
+|   dbLoad.sql                          #SQL file to initialize Database 
+|   docker-compose.yml                  #Docker Compose File to build and orchestrate containers
+|   index.html                          #User login page
+|   structure.txt                       #File Structure & Descriptions
+|   README.txt                          #Set up guide for our solution
+|   TravelLocalTests.postman_collection.json    #Postman endpoints to test services
+|   
++---complexServices                     #Directory containing Python files for Complex Services
+|   |   amqp_setup.py                   #Setup file for amqp
+|   |   invokes.py                      #Python file containing function to invoke services
+|   |   manageItinerary.Dockerfile      #Dockerfile containing instructions to build image for Manage Itinerary microservice
+|   |   manageItinerary.py              #Code for Manage Itinerary microservice
+|   |   managePOI.Dockerfile            #Dockerfile containing instructions to build image for Manage POI microservice
+|   |   managePOI.py                    #Code for Manage POI microservice
+|   |   requirements.txt                #Dependencies for microservices
+|   |   tempCodeRunnerFile.py           
+|   |   
+|   \---__pycache__
+|           
++---dbServices                          #Directory containing Python files for Atomic Services
+|   |   amqp_setup.py                   #Setup file for amqp
+|   |   hiddengem.Dockerfile            #Dockerfile containing instructions to build image for hiddengem microservice
+|   |   hiddengem.py                    #Code for hiddengem microservice
+|   |   itinerary.Dockerfile            #Dockerfile containing instructions to build image for Itinerary microservice
+|   |   itinerary.py                    #Code for itinerary microservice
+|   |   log.Dockerfile                  #Dockerfile containing instructions to build image for Log microservice
+|   |   log.py                          #Code for log microservice
+|   |   recommendation.Dockerfile       #Dockerfile containing instructions to build image for Recommendation microservice
+|   |   recommendation.py               #Code for recommendation microservice
+|   |   requirements.txt                #Dependencies for microservices
+|   |   
+|   \---recommendation                  
+|       +---Image                       #Directory containing images to be used by recommendation microservice
++---grafana_data                        #Directory containing data for Grafana to be mounted when starting service
+|   |   grafana.db
+|   |   
+|   +---plugins
+|   \---png
++---images                              #Directory containing images that will be used for our solution
++---krakend                             #Directory containing krakenD configuration to be mounted when starting service
+|       krakend.json                    #Config file for krakenD
+|       
++---pages                               #Directory containing all the pages in our Web UI
+|   +---hidden_gem                      #Directory containing code for Creating Hidden Gems
+|   +---home                            #Directory containing code for Home Page
+|   +---itinerary_detail                #Directory containing code for Itinerary Page
+|   +---search                          #Directory containing code for Search Pages
+|   \---user                            #Directory containing code for Login page
+|               
++---php                                 #Directory containing code for handling Logins
+|   +---config
+|   |       database.php
+|   |       
+|   +---includes
+|   |       autoload.php
+|   |       
+|   \---objects
+|           autoload.php
+|           connection.php
+|           user.php
+|           userDAO.php
+|           userLogin.php
+|           
++---scripts                             #Directory containing extra scripts used for UI
+|   +---jquery-ui-1.12.1.custom         #Directory containing scripts for jquery
+|   +---TimePicki-master                #Directory containing scripts for creating a time picker
+|               
++---scss                                #Directory containing code to for the styling on index.html
+|       master.css
+|       master.css.map
+|       master.scss
+|       
+\---__pycache__
+        amqp_setup.cpython-37.pyc
+        
