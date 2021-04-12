@@ -3,7 +3,7 @@
 ===================================
 1. Save files into the root directory of WAMP/MAMP. (/wamp64/www/..)
 
-2. Run WAMP/MAMP server
+2. Run WAMP/MAMP and Docker Engine server
 
 3. Load Database File
 Dir: "/dbLoad.sql"
