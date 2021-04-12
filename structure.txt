@@ -16,8 +16,6 @@ TRAVEL-LOCAL-ESD
 |   |   managePOI.py                    #Code for Manage POI microservice
 |   |   requirements.txt                #Dependencies for microservices
 |   |   tempCodeRunnerFile.py           
-|   |   
-|   \---__pycache__
 |           
 +---dbServices                          #Directory containing Python files for Atomic Services
 |   |   amqp_setup.py                   #Setup file for amqp
@@ -71,7 +69,3 @@ TRAVEL-LOCAL-ESD
 |       master.css
 |       master.css.map
 |       master.scss
-|       
-\---__pycache__
-        amqp_setup.cpython-37.pyc
-        
